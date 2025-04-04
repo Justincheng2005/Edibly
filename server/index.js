@@ -11,6 +11,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors())
 app.use(express.json())
 
+const userRoutes = require('./routes/userRoutes')
+const mealRoutes = require('./routes/mealRoutes')
+const diningRoutes = require('./routes/diningRoutes')
+
+app.use('/users', userRoutes)
+app.use('/meals', mealRoutes)
+app.use('/diningHalls', diningRoutes)
+
 
 // basic route
 app.get("/test", (req, res) => {
