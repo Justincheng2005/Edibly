@@ -1,13 +1,16 @@
 {
+  "name": "@edibly/server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "pg": "^8.14.1"
-  },
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
