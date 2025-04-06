@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
-import { query } from "./db/db";
+import { query } from "./db/db.js";
+// import userRoutes from "./routes/userRoutes.js";
+// import mealRoutes from "./routes/mealRoutes.js";
+import diningRoutes from "./routes/diningRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -10,22 +13,9 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-const userRoutes = require('./routes/userRoutes')
-const mealRoutes = require('./routes/mealRoutes')
-const diningRoutes = require('./routes/diningRoutes')
-
-app.use('/users', userRoutes)
-app.use('/meals', mealRoutes)
-app.use('/diningHalls', diningRoutes)
-
-const userRoutes = require('./routes/userRoutes')
-const mealRoutes = require('./routes/mealRoutes')
-const diningRoutes = require('./routes/diningRoutes')
-
-app.use('/users', userRoutes)
-app.use('/meals', mealRoutes)
-app.use('/diningHalls', diningRoutes)
-
+// app.use('/users', userRoutes)
+// app.use('/meals', mealRoutes)
+app.use('/diningLocations', diningRoutes)
 
 // basic route
 app.get("/test", (req, res) => {
