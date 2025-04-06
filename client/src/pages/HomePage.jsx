@@ -34,7 +34,7 @@ const HomePage = () => {
 
             {/* Red Navbar */}
             <div className="main-navbar">
-                <Link to="/dininghalls" className="nav-button">
+                <Link to="/dining-halls" className="nav-button">
                     Dining Halls
                 </Link>
                 <div className="nav-button search-button">
@@ -55,6 +55,18 @@ const HomePage = () => {
                     transition: 'background-image 1s ease-in-out'
                 }}
             >
+                <div
+                    className="blur-overlay"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backdropFilter: 'blur(2px)',
+                        zIndex: -1
+                    }}
+                />
                 <h1 className="welcome-title">Welcome to Edibly</h1>
                 <p className="welcome-text">Your one-stop destination for campus dining options</p>
 

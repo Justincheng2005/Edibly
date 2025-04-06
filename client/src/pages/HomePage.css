@@ -79,26 +79,43 @@
     box-sizing: border-box;
     position: relative;
     min-height: 500px;
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
+    z-index: -1;
+    opacity: 0.95;
 }
 
 .welcome-title {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    text-shadow: none;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.5);
     background-color: transparent;
     padding: 0;
     border-radius: 0;
-    color: #971B2F;
-    /* UMass maroon color to match navbar */
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
 .welcome-text {
     font-size: 1.2rem;
     max-width: 600px;
-    text-shadow: none;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0, 0, 0, 0.5);
     background-color: transparent;
     padding: 0;
     border-radius: 0;
+    color: white;
+    font-weight: bold;
 }
 
 /* About section */
