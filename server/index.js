@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
-import { query } from "./db/db.js";
+import supabase from './db/supabaseClient.js';
 // import userRoutes from "./routes/userRoutes.js";
 // import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
 
+
+
+const PORT = process.env.PORT || 3000;
 dotenv.config();
 const app = express();
 
@@ -22,7 +25,13 @@ app.get("/test", (req, res) => {
     res.send("Server is running");
 });
 
-const PORT = process.env.PORT || 5000;
+//test supabaseClient connection
+const { data, error } = await supabase.from('meals').select('*');
+console.log(data, error)
+
+
+
+
 app.listen(PORT, () => {
     console.log(`Server running on port 5000`);
 });
