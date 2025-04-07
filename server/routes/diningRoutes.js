@@ -1,12 +1,13 @@
 import { Router } from 'express';
-// import{
-//     //functions,
-// } from './controllers/diningCont.js';
+import {
+    getAllDiningLocations,
+    getDiningLocationsByCollege
+} from '../controllers/diningCont.js';
 
 
 const router = Router();
 
-// router.get('/', doSomethingController as any)
-// will return the result of your doSomethingController
+router.get('/', getAllDiningLocations);
+router.get('/school/:college', getDiningLocationsByCollege);
 
 export default router;
