@@ -4,9 +4,6 @@ import "./HomePage.css";
 import DHallCard from "../components/DHallCard";
 import { fetchAllDiningLocations } from "../api/diningAPI";
 
-// Default placeholder image
-import defaultImage from "../images/hampshire.jpg";
-
 const DiningHalls = () => {
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +29,7 @@ const DiningHalls = () => {
           name: hall.name,
           college: hall.school,
           description: `Hours: ${hall.hours}`,
-          image: hall.image || defaultImage
+          image: hall.image
         }));
         setHalls(hallsWithImages);
         setError(null);
