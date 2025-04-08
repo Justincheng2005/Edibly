@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:3000'; //backend should run on port 3000 for now.
 
 export const fetchAllDiningLocations = async () => {
     try {
