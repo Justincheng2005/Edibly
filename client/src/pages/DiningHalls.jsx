@@ -29,7 +29,7 @@ const DiningHalls = () => {
           name: hall.name,
           college: hall.school,
           description: `Hours: ${hall.hours}`,
-          image: hall.image
+          image: hall.image_filename
         }));
         setHalls(hallsWithImages);
         setError(null);
