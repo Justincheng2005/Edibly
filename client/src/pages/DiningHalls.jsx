@@ -1,25 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./HomePage.css";
 import DHallCard from "../components/DHallCard";
-import hampshireImg from "../images/hampshire.jpg";
-import berkshireImg from "../images/berkshire.jpg";
-import valentineImg from "../images/valentine.jpg";
+import { fetchAllDiningLocations } from "../api/diningAPI";
 
 const DiningHalls = () => {
-  const halls = [
-    { id: 1, name: 'Hampshire', image: hampshireImg, college: 'UMass Amherst' },
-    { id: 2, name: 'Berkshire', image: berkshireImg, college: 'UMass Amherst' },
-    { id: 3, name: 'Valentine', image: valentineImg, college: 'Amherst College' }
-    //this is fake data, replace with info from database, maybe add image linking information or something here.
-  ]
+  const [halls, setHalls] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // College background colors
   const bgColors = {
-    "UMass Amherst": '#971B2F',
+    "Umass": '#971B2F',
     "Amherst College": '#470a77',
     "Hampshire College": '#faca39',
     "Smith College": '#203F69',
-    "Mt. Holyoke College": '#83C2EC'
-  }
+    "Holyoke College": '#83C2EC'
+  };
+
+  useEffect(() => {
+    const loadDiningHalls = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchAllDiningLocations();
+        // Map data to our component structure
+        const hallsWithImages = data.map(hall => ({
+          id: hall.id,
+          name: hall.name,
+          college: hall.school,
+          description: `Hours: ${hall.hours}`,
+          image: hall.image
+        }));
+        setHalls(hallsWithImages);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load dining halls. Please try again later.");
+        console.error("Error loading dining halls:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDiningHalls();
+  }, []);
+
+  // Get unique colleges from the halls data
+  const colleges = halls.length > 0
+    ? [...new Set(halls.map(hall => hall.college))]
+    : Object.keys(bgColors);
 
   return (
     <div>
@@ -44,29 +72,38 @@ const DiningHalls = () => {
       </div>
 
       <div className="dining-halls-container" style={{ padding: "20px" }}>
-        {Object.keys(bgColors).map((college) => (
-          <div
-            key={college}
-            style={{
-              backgroundColor: bgColors[college],
-              padding: "20px",
-              marginBottom: "10px",
-              borderRadius: "12px",
-            }}
-          >
-            <h2 style={{ color: "white" }}>{college.toUpperCase()}</h2>
-            <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-              {halls
-                .filter((d) => d.college === college)
-                .map((d) => (
-                  <DHallCard key={d.id} diningHall={d} />
-                ))}
-            </div>
-          </div>
-        ))}
+        {loading ? (
+          <p>Loading dining halls...</p>
+        ) : error ? (
+          <p style={{ color: "red" }}>{error}</p>
+        ) : (
+          colleges.map((college) => {
+            const collegeHalls = halls.filter(h => h.college === college);
+            if (collegeHalls.length === 0) return null;
+
+            return (
+              <div
+                key={college}
+                style={{
+                  backgroundColor: bgColors[college] || '#777',
+                  padding: "20px",
+                  marginBottom: "10px",
+                  borderRadius: "12px",
+                }}
+              >
+                <h2 style={{ color: "white" }}>{college.toUpperCase()}</h2>
+                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+                  {collegeHalls.map((hall) => (
+                    <DHallCard key={hall.id} diningHall={hall} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default DiningHalls;
