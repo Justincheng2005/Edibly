@@ -1,0 +1,35 @@
+.main-navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #971B2F;
+    color: white;
+    padding: 0;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+
+.nav-button {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: #7a1727;
+}
+
+.search-button {
+    background-color: #7a1727;
+    color: white;
+}
+.search-button:hover {
+    background-color: #971B2F;
+}

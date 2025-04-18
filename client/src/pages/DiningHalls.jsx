@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./HomePage.css";
 import DHallCard from "../components/DHallCard";
 import { fetchAllDiningLocations } from "../api/diningAPI";
+import Navbar from "../components/Navbar";
+import MainHeader from "../components/MainHeader";
 
 const DiningHalls = () => {
   const [halls, setHalls] = useState([]);
@@ -52,24 +53,10 @@ const DiningHalls = () => {
   return (
     <div>
       {/* UMass style header */}
-      <header className="main-header">
-        <div className="header-content">
-          <h1 className="site-title">Edibly | Campus Dining</h1>
-        </div>
-      </header>
+      <MainHeader/>
 
       {/* Red Navbar */}
-      <div className="main-navbar">
-        <Link to="/dining-halls" className="nav-button">
-          Dining Halls
-        </Link>
-        <div className="nav-button search-button">
-          Search Meal
-        </div>
-        <div className="nav-button">
-          Profile
-        </div>
-      </div>
+      <Navbar/>
 
       <div className="dining-halls-container" style={{ padding: "20px" }}>
         {loading ? (
