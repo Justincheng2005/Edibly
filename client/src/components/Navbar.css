@@ -30,3 +30,6 @@
     background-color: #7a1727;
     color: white;
 }
+.search-button:hover {
+    background-color: #971B2F;
+}
