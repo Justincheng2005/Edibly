@@ -73,7 +73,79 @@ async function startScraper() {
                         // Add to the overall results
                         allResults = [...allResults, ...typedResults];
                     } else {
-                        console.log(`No food items found for ${mealType.name}`);
+                        // Additional check - sometimes there are foods but they're in a different format
+                        try {
+                            // Look for other possible food item selectors
+                            const alternativeFoodItems = await driver.findElements(
+                                By.css(".food-item, .menu-item, .station-item-wrapper, [data-food-id]")
+                            );
+
+                            if (alternativeFoodItems.length > 0) {
+                                console.log(`Found ${alternativeFoodItems.length} alternative food items for ${mealType.name}`);
+
+                                // Try to click on the first alternative item
+                                await alternativeFoodItems[0].click();
+                                console.log(`Clicked on alternative food item for ${mealType.name}`);
+                                await driver.sleep(1000);
+
+                                // Now continue with regular scraping
+                                const items = await scraperInfo(driver);
+                                console.log(`Scraped ${items.length} ${mealType.name} items using alternative approach`);
+
+                                // Add meal type to the results
+                                const typedResults = items.map(item => ({
+                                    ...item,
+                                    mealType: mealType.name
+                                }));
+
+                                // Add to the overall results
+                                allResults = [...allResults, ...typedResults];
+                            } else {
+                                // Try one more approach - look for any clickable element that might lead to food items
+                                try {
+                                    // Check if there's a message on the page indicating no items
+                                    const noItemsMessage = await driver.executeScript(`
+                                        const noItemsEl = document.querySelector('.no-items, .empty-menu, .no-results');
+                                        return noItemsEl ? noItemsEl.textContent.trim() : null;
+                                    `);
+
+                                    if (noItemsMessage) {
+                                        console.log(`No items available for ${mealType.name}: "${noItemsMessage}"`);
+                                    } else {
+                                        console.log(`No standard food items found for ${mealType.name}, but no explicit 'no items' message either`);
+                                    }
+
+                                    // Add a placeholder entry so we know this section was checked
+                                    allResults.push({
+                                        name: "No Items Available",
+                                        servingSize: "N/A",
+                                        calories: "N/A",
+                                        nutrition: {},
+                                        dietaryInfo: { allergens: [], dietary: [] },
+                                        ingredients: "N/A",
+                                        mealType: mealType.name,
+                                        isPlaceholder: true
+                                    });
+
+                                } catch (finalCheckErr) {
+                                    console.log(`No food items found for ${mealType.name} after all checks`);
+                                }
+                            }
+                        } catch (alternativeErr) {
+                            console.log(`No food items found for ${mealType.name}`);
+
+                            // Add a placeholder entry so we know this section was checked
+                            allResults.push({
+                                name: "No Items Available",
+                                servingSize: "N/A",
+                                calories: "N/A",
+                                nutrition: {},
+                                dietaryInfo: { allergens: [], dietary: [] },
+                                ingredients: "N/A",
+                                mealType: mealType.name,
+                                isPlaceholder: true
+                            });
+                        }
                     }
                 } catch (error) {
                     console.error(`Error navigating to ${mealType.name}:`, error);
