@@ -3,6 +3,7 @@ import { Builder, By, until } from 'selenium-webdriver';
 async function startScraper() {
     // Launch Chrome browser
     let driver = await new Builder().forBrowser('chrome').build();
+    let allResults = [];
 
     try {
         // Open the Valentine Hall menu page
@@ -16,21 +17,76 @@ async function startScraper() {
         await viewMenus.click();
         console.log("Clicked View Menus");
 
-        const breakfast = await driver.wait(
-            until.elementLocated(By.xpath("//strong[text()='Breakfast']/ancestor::a")),
-            10000
-        );
-        await breakfast.click();
-        console.log("Clicked on Breakfast");
+        // Define all the meal types to scrape in order
+        const mealTypes = [
+            { name: "Breakfast", xpath: "//strong[text()='Breakfast']/ancestor::a" },
+            { name: "Lunch", xpath: "//a[contains(., 'Lunch')]" },
+            { name: "Dinner", xpath: "//a[contains(., 'Dinner')]" },
+            { name: "Late Night", xpath: "//a[contains(., 'Late Night')]" },
+            { name: "Salad Bar", xpath: "//a[contains(., 'Salad Bar')]" },
+            { name: "Daily Deli & Bread Selection", xpath: "//a[contains(., 'Daily Deli & Bread Selection')]" },
+            { name: "Yogurt & Granola Bar", xpath: "//a[contains(., 'Yogurt & Granola Bar')]" },
+            { name: "Ice Cream Station", xpath: "//a[contains(., 'Ice Cream Station')]" }
+        ];
 
-        // Scrape the information
-        const menuItems = await scraperInfo(driver);
-        console.log(`Scraped ${menuItems.length} menu items`);
+        // Scrape each meal type in sequence
+        for (const mealType of mealTypes) {
+            console.log(`\n=== STARTING ${mealType.name.toUpperCase()} MENU SCRAPING ===`);
 
-        return menuItems;
+            try {
+                // First close any open modals/popups if needed
+                try {
+                    const closeButtons = await driver.findElements(By.css("a[class*='close'], button[class*='close']"));
+                    if (closeButtons.length > 0) {
+                        await closeButtons[0].click();
+                        console.log("Clicked close button to return to menu");
+                        await driver.sleep(1000);
+                    }
+                } catch (closeErr) {
+                    console.log("No close button found, assuming already at menu view");
+                }
+
+                // Click on the meal type
+                try {
+                    const mealTypeLink = await driver.wait(
+                        until.elementLocated(By.xpath(mealType.xpath)),
+                        10000
+                    );
+                    await mealTypeLink.click();
+                    console.log(`Clicked on ${mealType.name}`);
+                    await driver.sleep(2000); // Wait for menu to load
+
+                    // Check if there are food items available
+                    const foodItems = await driver.findElements(By.css("a.food-link"));
+
+                    if (foodItems.length > 0) {
+                        // Scrape the meal items
+                        const items = await scraperInfo(driver);
+                        console.log(`Scraped ${items.length} ${mealType.name} items`);
+
+                        // Add meal type to the results
+                        const typedResults = items.map(item => ({
+                            ...item,
+                            mealType: mealType.name
+                        }));
+
+                        // Add to the overall results
+                        allResults = [...allResults, ...typedResults];
+                    } else {
+                        console.log(`No food items found for ${mealType.name}`);
+                    }
+                } catch (error) {
+                    console.error(`Error navigating to ${mealType.name}:`, error);
+                }
+            } catch (mealError) {
+                console.error(`Error scraping ${mealType.name} menu:`, mealError);
+            }
+        }
+
+        return allResults;
     } catch (error) {
         console.error("Error:", error);
-        return [];
+        return allResults;
     } finally {
         await driver.quit(); // Close the browser
     }
@@ -40,12 +96,17 @@ async function startScraper() {
 async function scraperInfo(driver) {
     const results = [];
 
-    //click first food item
-    const firstTile = await driver.wait(
-        until.elementLocated(By.css("a.food-link")),
-        10000
-    );
-    await firstTile.click();
+    try {
+        //click first food item
+        const firstTile = await driver.wait(
+            until.elementLocated(By.css("a.food-link")),
+            10000
+        );
+        await firstTile.click();
+    } catch (noFoodItemsError) {
+        console.log("No food items found to scrape");
+        return results;
+    }
 
     // Wait for a moment to make sure popup loads
     await driver.sleep(1000);
@@ -426,19 +487,112 @@ async function scraperInfo(driver) {
                     // Next button is disabled, so we're done
                     hasNextItem = false;
                     console.log("Next button is disabled. Ending scrape.");
+
+                    // Close the modal by clicking the close button
+                    try {
+                        // Try to find the close button using the class from the HTML
+                        const closeButton = await driver.findElement(By.css("a.modal-carousel-close"));
+                        await closeButton.click();
+                        console.log("Closed the modal using close button");
+                    } catch (closeErr) {
+                        // Try alternative selectors if the first one doesn't work
+                        try {
+                            const altCloseButton = await driver.findElement(By.css("a[class*='close'], button[class*='close'], .close-button"));
+                            await altCloseButton.click();
+                            console.log("Closed the modal using alternative close button");
+                        } catch (altCloseErr) {
+                            // As a last resort, try using JavaScript to click the close button
+                            try {
+                                await driver.executeScript(`
+                                    // Try to find any close buttons by common attributes
+                                    const closeElements = document.querySelectorAll("a[class*='close'], button[class*='close'], [aria-label='Close'], .close-button");
+                                    if (closeElements.length > 0) {
+                                        closeElements[0].click();
+                                        return true;
+                                    }
+                                    
+                                    // If that doesn't work, try to find by href containing "void"
+                                    const hrefCloseElements = document.querySelectorAll("a[href*='javascript:void']");
+                                    if (hrefCloseElements.length > 0) {
+                                        hrefCloseElements[0].click();
+                                        return true;
+                                    }
+                                    
+                                    return false;
+                                `);
+                                console.log("Attempted to close modal via JavaScript execution");
+                            } catch (jsCloseErr) {
+                                console.error("Could not close the modal:", jsCloseErr);
+                            }
+                        }
+                    }
                 }
             } else {
                 // If we can't find the next button at all
                 hasNextItem = false;
                 console.log("No Next button found. Ending scrape.");
+
+                // Close the modal by clicking the close button
+                try {
+                    // Try to find the close button using the class from the HTML
+                    const closeButton = await driver.findElement(By.css("a.modal-carousel-close"));
+                    await closeButton.click();
+                    console.log("Closed the modal using close button");
+                } catch (closeErr) {
+                    // Try alternative selectors if the first one doesn't work
+                    try {
+                        const altCloseButton = await driver.findElement(By.css("a[class*='close'], button[class*='close'], .close-button"));
+                        await altCloseButton.click();
+                        console.log("Closed the modal using alternative close button");
+                    } catch (altCloseErr) {
+                        // As a last resort, try using JavaScript to click the close button
+                        try {
+                            await driver.executeScript(`
+                                // Try to find any close buttons by common attributes
+                                const closeElements = document.querySelectorAll("a[class*='close'], button[class*='close'], [aria-label='Close'], .close-button");
+                                if (closeElements.length > 0) {
+                                    closeElements[0].click();
+                                    return true;
+                                }
+                                
+                                // If that doesn't work, try to find by href containing "void"
+                                const hrefCloseElements = document.querySelectorAll("a[href*='javascript:void']");
+                                if (hrefCloseElements.length > 0) {
+                                    hrefCloseElements[0].click();
+                                    return true;
+                                }
+                                
+                                return false;
+                            `);
+                            console.log("Attempted to close modal via JavaScript execution");
+                        } catch (jsCloseErr) {
+                            console.error("Could not close the modal:", jsCloseErr);
+                        }
+                    }
+                }
             }
         } catch (navigationError) {
             console.error("Error navigating to next item:", navigationError);
             hasNextItem = false; // Stop the loop if we encounter an error
+
+            // Still try to close the modal
+            try {
+                const closeButton = await driver.findElement(By.css("a[class*='close']"));
+                await closeButton.click();
+                console.log("Closed the modal after error");
+            } catch (finalCloseErr) {
+                console.error("Could not close the modal after error");
+            }
         }
     }
 
     console.log(`Finished scraping a total of ${itemCount} items.`);
+
+    // Add a sleep at the end to confirm everything worked
+    console.log("Sleeping for a few seconds to let you confirm the scraping completed...");
+    await driver.sleep(5000);
+    console.log("Sleep complete, returning results.");
+
     return results;
 }
 
