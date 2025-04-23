@@ -4,7 +4,8 @@ import "./HomePage.css";
 import hampshireImg from "../images/hampshire.jpg";
 import berkshireImg from "../images/berkshire.jpg";
 import valentineImg from "../images/valentine.jpg";
-
+import Navbar from "../components/Navbar";
+import MainHeader from "../components/MainHeader";
 const HomePage = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const images = [hampshireImg, berkshireImg, valentineImg];
@@ -26,24 +27,10 @@ const HomePage = () => {
     return (
         <div className="home-container">
             {/* UMass style header */}
-            <header className="main-header">
-                <div className="header-content">
-                    <h1 className="site-title">Edibly | Campus Dining</h1>
-                </div>
-            </header>
+            <MainHeader/>
 
             {/* Red Navbar */}
-            <div className="main-navbar">
-                <Link to="/dining-halls" className="nav-button">
-                    Dining Halls
-                </Link>
-                <div className="nav-button search-button">
-                    Search Meal
-                </div>
-                <div className="nav-button">
-                    Profile
-                </div>
-            </div>
+            <Navbar/>
 
             {/* Welcome Section with carousel background */}
             <div
