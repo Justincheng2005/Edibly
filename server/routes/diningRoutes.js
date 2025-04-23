@@ -1,14 +1,21 @@
 import { Router } from 'express';
+<<<<<<< HEAD
 import supabase from './db/supabaseClient.js';
 // import{
 //     //functions,
 // } from './controllers/diningCont.js';
+=======
+import {
+    getAllDiningLocations,
+    getDiningLocationsByCollege
+} from '../controllers/diningCont.js';
+>>>>>>> c0460f6b82d8b77b3737d1e94e287f78b23af0ca
 
 
 const router = Router();
 
-// router.get('/', doSomethingController as any)
-// will return the result of your doSomethingController
+router.get('/', getAllDiningLocations);
+router.get('/school/:college', getDiningLocationsByCollege);
 
 router.post('/', async (req, res) => {   
     try {
