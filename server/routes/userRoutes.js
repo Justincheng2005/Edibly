@@ -50,4 +50,54 @@ router.get("/user", checkJwt, async (req, res) => {
   }
 });
 
+router.get("/user/allergies", checkJwt, async (req, res) => {
+  const auth0_id = req.auth.sub;
+
+  try {
+    const { data: existingUser, error: userError } = await supabase
+      .from("users")
+      .select("userid")
+      .eq("auth0_id", auth0_id)
+      .single();
+
+    if (userError) throw userError;
+
+    const {data:allergies, error:allergyError} = await supabase
+    .from("userallergies")
+    .select("allergies(FoodName)")
+    .eq("userid", existingUser.userid)
+
+    if (allergyError) throw allergyError;
+    res.json({ allergies: allergies.map(a => a.allergies.foodname) });
+  } catch (err) {
+    console.error("Error getting allergies:", err.message);
+    res.status(500).json({ error: "Failed to fetch allergies" });
+  }
+});
+
+router.get("/user/preferences", checkJwt, async (req, res) => {
+  const auth0_id = req.auth.sub;
+
+  try {
+    const { data: existingUser, error: userError } = await supabase
+      .from("users")
+      .select("userid")
+      .eq("auth0_id", auth0_id)
+      .single();
+
+    if (userError) throw userError;
+
+    const {data:preferences, error:allergyError} = await supabase
+    .from("userpreferences")
+    .select("preferences(preferencename)")
+    .eq("userid", existingUser.userid)
+
+    if (allergyError) throw allergyError;
+    res.json({ preferences: preferences.map(p => p.preferences.preferencename) });
+  } catch (err) {
+    console.error("Error getting preferences:", err.message);
+    res.status(500).json({ error: "Failed to fetch preferences" });
+  }
+});
+
 export default router;

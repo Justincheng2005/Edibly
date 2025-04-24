@@ -2,7 +2,7 @@ import MainHeader from "../components/MainHeader";
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 import "./ProfilePage.css"
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
@@ -14,25 +14,63 @@ const ProfilePage = () => {
         getAccessTokenSilently,
         user,
     } = useAuth0();
+    const [userAllergies, setUserAllergies] = useState([]);
+    const [userPreferences, setUserPreferences] = useState([]);
 
-    useEffect(() => {
-        const syncUser = async () => {
-          try {
+    const syncUser = async (getAccessTokenSilently) => {
+        try {
+          const token = await getAccessTokenSilently();
+          const res = await axios.get("http://localhost:3000/users/user", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          console.log("User synced:", res.data);
+          return true
+        } catch (err) {
+          console.error("User sync failed:", err);
+          return false
+        }
+    };
+
+    const fetchUserAllergies = async (getAccessTokenSilently, setUserAllergies) => {
+        try {
             const token = await getAccessTokenSilently();
-            const res = await axios.get("http://localhost:3000/users/user", {
+            const res = await axios.get("http://localhost:3000/users/user/allergies", {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             });
-            console.log("User synced:", res.data);
+            setUserAllergies(res.data.allergies)
           } catch (err) {
-            console.error("User sync failed:", err);
+            console.error("Failed to fetch allergies:", err);
           }
+    };
+    const fetchUserPreferences = async (getAccessTokenSilently, setUserPreferences) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await axios.get("http://localhost:3000/users/user/preferences", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            setUserPreferences(res.data.preferences)
+          } catch (err) {
+            console.error("Failed to fetch preferences:", err);
+          }
+    };
+
+    useEffect(() => {
+        const runAll = async () => {
+          if (!isAuthenticated) return;
+      
+          await syncUser(getAccessTokenSilently); // optional depending on if you want to always sync
+      
+          fetchUserAllergies(getAccessTokenSilently, setUserAllergies);
+          fetchUserPreferences(getAccessTokenSilently, setUserPreferences);
         };
-    
-        if (isAuthenticated) {
-          syncUser();
-        }
+      
+        runAll();
       }, [isAuthenticated, getAccessTokenSilently]);
 
     return (
@@ -79,8 +117,11 @@ const ProfilePage = () => {
                         <div className="allergies-container card-style">
                         <h2 className="allergies-title">Allergies</h2>
                         <ul className="list-of-allergies">
-                            <li>Tree Nuts</li>
-                            <li>Legumes</li>
+                            {userAllergies.length > 0 ? (
+                                userAllergies.map((allergy, index) => <li key={index}>{allergy}</li>)
+                            ) : (
+                                <li>No allergies specified</li>
+                            )}
                         </ul>
                         <Link to="/profile/usrid/allergies" className="apbutton">
                             Update Allergies
@@ -90,8 +131,11 @@ const ProfilePage = () => {
                         <div className="preferences-container card-style">
                             <h2 className="preferences-title">Preferences</h2>
                             <ul className="list-of-preferences">
-                                <li>Halal</li>
-                                <li>Vegeterian</li>
+                                {userPreferences.length > 0 ? (
+                                    userPreferences.map((pref, index) => <li key={index}>{pref}</li>)
+                                ) : (
+                                    <li>No Preferences specified</li>
+                                )}
                             </ul>
                             <Link to="/profile/usrid/preferences" className="apbutton">
                                 Update Preferences
