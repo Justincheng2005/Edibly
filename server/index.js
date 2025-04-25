@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
 import supabase from './db/supabaseClient.js';
-// import userRoutes from "./routes/userRoutes.js";
 // import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
+import userRoutes from "./routes/userRoutes.js"
 
 
 
@@ -16,7 +16,7 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-// app.use('/users', userRoutes)
+app.use('/users', userRoutes)
 // app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 
