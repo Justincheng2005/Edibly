@@ -2,6 +2,7 @@ import supabase from '../db/supabaseClient.js';
 
 export const getStaticPreferenceList = (req, res) =>{
     //const usrId = req.params.usrid;
+    //const usrId = req.auth0.usrid;
     supabase.from('preferences')
         .select('*')
         //.eq('userId', userId)

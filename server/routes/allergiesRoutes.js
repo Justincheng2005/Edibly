@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { getStaticAllergiesList } from "../controllers/allergiesCont";
+// import { Router } from "express";
+// import { getStaticAllergiesList } from "../controllers/allergiesCont";
 
-const router = Router();
+// const router = Router();
 
-router.get('/profile/usrid/allergies', getStaticAllergiesList);
+// router.get('/profile/usrid/allergies', getStaticAllergiesList);
 
-export default router;
+// export default router;

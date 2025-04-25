@@ -3,10 +3,14 @@ import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
 import "./PreferencesPage.css";
 import React,{useState, useEffect} from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { fetchStaticPreferencesList } from "../api/diningAPI";
 
 const PreferencesPage = () => {
     const [selectedPref, setSelectedPref] = useState([]);
+    const [dietList,setDietList] = useState([]);
+    const [loading,setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const handlePref = (event) =>{
         const value = event.target.value;
         setSelectedPref((prev)=>{
@@ -14,14 +18,28 @@ const PreferencesPage = () => {
         });
     };
     //const dietList = ['a','b', 'c'];
-    //const {user} = use
-    const dietList = fetchStaticPreferencesList()
-    .then((data) => {
-        data
-    });
+    const {userId} = useAuth0();
+   
     useEffect(() =>{
         //add front-end function
-    } )
+        console.log("Auth0 user:", userId);
+        console.log("Auth0 user:", userId?.sub);
+        if (userId?.sub) {
+            fetchStaticPreferencesList(userId.sub)
+            .then((data) => {
+                setDietList(data)
+                setError(null)
+            })
+            .catch((error) => {
+                setError("Failed to find preferences for this user");
+                console.error(error);
+            })
+            .finally(() => setLoading(false));
+        }
+    }, [userId,userId?.sub]);  // dependent on user.sub
+    if (loading) return <div>Loading Static List of Preferences...</div>;
+    if (error) return <div>Error: {error}</div>;
+    
     return (
         <div>
             <div className="preferences-page-container">
