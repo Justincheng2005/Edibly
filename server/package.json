@@ -8,10 +8,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "chromedriver": "^135.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "pg": "^8.14.1"
+    "express-jwt": "^8.5.1",
+    "jwks-rsa": "^3.2.0",
+    "pg": "^8.14.1",
+    "selenium-webdriver": "^4.31.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
