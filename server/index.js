@@ -5,7 +5,8 @@ import supabase from './db/supabaseClient.js';
 // import userRoutes from "./routes/userRoutes.js";
 // import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
-
+import preferencesRoutes from "./routes/preferencesRoutes.js";
+import allergiesRoutes from "./routes/allergiesRoutes.js";
 
 
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,8 @@ app.use(express.json())
 // app.use('/users', userRoutes)
 // app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
+app.use('/profile/usrid/preferences', preferencesRoutes)
+app.use('/profile/usrid/allergies', allergiesRoutes)
 
 // basic route
 app.get("/test", (req, res) => {

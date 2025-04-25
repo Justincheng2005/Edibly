@@ -32,3 +32,33 @@ export const getDiningLocationsByCollege = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 };
+// router.post('/', async (req, res) => {   
+//     try {
+//       const { data, error } = await supabase
+//         .from('dining_halls')
+//         .select('*');
+      
+//       if (error) throw error;
+//       res.json(data);
+//     } catch (err) {
+//       res.status(500).json({ error: err.message });
+//     }
+//   });
+  
+// router.post('/:id', async (req, res) => {
+// try {
+//     const { data, error } = await supabase
+//     .from('dining-halls')    //I hope that's the right route info
+//     .select('*')
+//     .eq('id', req.params.id)
+//     .single();
+    
+//     if (error) throw error;
+//     res.json(data);
+// } catch (err) {
+//     res.status(500).json({ error: err.message });
+// }
+// });
+
+//SCALABLE
+//<Route diningHallRoute = "dining-halls/:hallName" element = {<DiningHallPage />}    />

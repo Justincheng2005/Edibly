@@ -29,3 +29,29 @@ export const fetchDiningLocationsBySchool = async (school) => {
         throw error;
     }
 }; 
+
+export const fetchStaticPreferencesList = (usrid) => {
+    return fetch(`${API_BASE_URL}/profile/${usrid}/preferences`)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Network Response is invalid');
+            }
+            return res.json();
+        })
+        .catch((error) =>{
+            console.error('Fetch Error:', error);
+        })
+}
+
+export const fetchStaticAllergiesList = (usrid) => {
+    return fetch(`${API_BASE_URL}/profile/${usrid}/allergies`)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('Network Response is invalid');
+            }
+            return res.json();
+        })
+        .catch((error) =>{
+            console.error('Fetch Error:', error);
+        })
+}

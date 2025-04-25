@@ -1,0 +1,83 @@
+.preferences-page-container {
+    background-color: #f3f3f3;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    accent-color: #7a1727;
+}
+
+.selected-preferences {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.selected-preferences h3 {
+    font-size: 1.25rem;
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+/*Code Duplication*/
+.card-style h2 {
+    color: #7a1727;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 6px;
+}
+
+.card-style ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 12px;
+}
+
+.card-style li {
+    font-size: 1rem;
+    text-align: left;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    border-left: 3px solid #e0e0e0;
+    color: #333;
+}
+
+.apbutton {
+    background-color: #7a1727; /* UMass maroon */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.apbutton:hover {
+    background-color: #5e101e; /* Slightly darker maroon for hover */
+}
+
