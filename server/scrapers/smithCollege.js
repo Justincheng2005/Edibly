@@ -98,71 +98,257 @@ async function startScraper() {
                                 // Get the page source which contains the nutrition panel HTML
                                 const pageSource = await driver.getPageSource();
 
-                                // Extract nutrition information using regex patterns
+                                // Extract nutrition information using multiple regex patterns for robustness
 
-                                // Serving Size
-                                const servingSizeRegex = /Serving Size:&nbsp;([^<]+)/i;
-                                const servingSizeMatch = pageSource.match(servingSizeRegex);
-                                if (servingSizeMatch && servingSizeMatch[1]) {
-                                    food.nutritionInfo.servingSize = servingSizeMatch[1].replace(/&nbsp;/g, ' ').trim();
-                                    console.log(`  Serving Size: ${food.nutritionInfo.servingSize}`);
+                                // Serving Size - try different patterns
+                                let servingSizePatterns = [
+                                    /Serving Size:&nbsp;([^<]+)/i,
+                                    /Serving Size:<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Serving Size"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of servingSizePatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.servingSize = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Serving Size: ${food.nutritionInfo.servingSize}`);
+                                        break;
+                                    }
                                 }
 
-                                // Calories - look for Calories followed by a number
-                                const caloriesRegex = /Calories<\/span>&nbsp;&nbsp;<span[^>]*>(\d+)<\/span>/i;
-                                const caloriesMatch = pageSource.match(caloriesRegex);
-                                if (caloriesMatch && caloriesMatch[1]) {
-                                    food.nutritionInfo.calories = caloriesMatch[1];
-                                    console.log(`  Calories: ${food.nutritionInfo.calories}`);
+                                // Calories - try different patterns
+                                let caloriesPatterns = [
+                                    /Calories<\/span>&nbsp;&nbsp;<span[^>]*>(\d+)<\/span>/i,
+                                    /Calories"[^>]*>(\d+)/i,
+                                    /Calories:[^>]*>(\d+)/i,
+                                    /Calories<\/span><span[^>]*>(\d+)/i
+                                ];
+
+                                for (const pattern of caloriesPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.calories = match[1];
+                                        console.log(`  Calories: ${food.nutritionInfo.calories}`);
+                                        break;
+                                    }
                                 }
 
-                                // Total Fat
-                                const fatRegex = /Total Fat<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i;
-                                const fatMatch = pageSource.match(fatRegex);
-                                if (fatMatch && fatMatch[1]) {
-                                    food.nutritionInfo.totalFat = fatMatch[1];
-                                    console.log(`  Total Fat: ${food.nutritionInfo.totalFat}`);
+                                // Total Fat - try different patterns
+                                let fatPatterns = [
+                                    /Total Fat<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i,
+                                    /Total Fat<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Total Fat"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of fatPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.totalFat = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Total Fat: ${food.nutritionInfo.totalFat}`);
+                                        break;
+                                    }
                                 }
 
-                                // Total Carbohydrate
-                                const carbsRegex = /Total Carbohydrate<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i;
-                                const carbsMatch = pageSource.match(carbsRegex);
-                                if (carbsMatch && carbsMatch[1]) {
-                                    food.nutritionInfo.carbs = carbsMatch[1];
-                                    console.log(`  Total Carbs: ${food.nutritionInfo.carbs}`);
+                                // Total Carbohydrate - try different patterns
+                                let carbPatterns = [
+                                    /Total Carbohydrate<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i,
+                                    /Total Carbohydrate<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Total Carbohydrate"[^>]*>([^<]+)/i,
+                                    /Carbohydrates"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of carbPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.carbs = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Total Carbs: ${food.nutritionInfo.carbs}`);
+                                        break;
+                                    }
                                 }
 
-                                // Protein
-                                const proteinRegex = /Protein<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i;
-                                const proteinMatch = pageSource.match(proteinRegex);
-                                if (proteinMatch && proteinMatch[1]) {
-                                    food.nutritionInfo.protein = proteinMatch[1];
-                                    console.log(`  Protein: ${food.nutritionInfo.protein}`);
+                                // Protein - try different patterns
+                                let proteinPatterns = [
+                                    /Protein<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i,
+                                    /Protein<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Protein"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of proteinPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.protein = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Protein: ${food.nutritionInfo.protein}`);
+                                        break;
+                                    }
                                 }
 
-                                // Sodium
-                                const sodiumRegex = /Sodium<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i;
-                                const sodiumMatch = pageSource.match(sodiumRegex);
-                                if (sodiumMatch && sodiumMatch[1]) {
-                                    food.nutritionInfo.sodium = sodiumMatch[1];
-                                    console.log(`  Sodium: ${food.nutritionInfo.sodium}`);
+                                // Sodium - try different patterns
+                                let sodiumPatterns = [
+                                    /Sodium<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i,
+                                    /Sodium<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Sodium"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of sodiumPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.sodium = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Sodium: ${food.nutritionInfo.sodium}`);
+                                        break;
+                                    }
                                 }
 
-                                // Sugars
-                                const sugarsRegex = /Sugars<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i;
-                                const sugarsMatch = pageSource.match(sugarsRegex);
-                                if (sugarsMatch && sugarsMatch[1]) {
-                                    food.nutritionInfo.sugars = sugarsMatch[1];
-                                    console.log(`  Sugars: ${food.nutritionInfo.sugars}`);
+                                // Sugars - try different patterns
+                                let sugarsPatterns = [
+                                    /Sugars<\/span><\/td><td><span[^>]*>&nbsp;([^<]+)<\/span>/i,
+                                    /Sugars<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Sugars"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of sugarsPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.sugars = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Sugars: ${food.nutritionInfo.sugars}`);
+                                        break;
+                                    }
                                 }
 
-                                // Ingredients - note the more detailed pattern from what we found
-                                const ingredientsRegex = /class="cbo_nn_LabelIngredients">([^<]+)<\/span>/i;
-                                const ingredientsMatch = pageSource.match(ingredientsRegex);
-                                if (ingredientsMatch && ingredientsMatch[1]) {
-                                    food.nutritionInfo.ingredients = ingredientsMatch[1].replace(/&nbsp;/g, ' ').trim();
-                                    console.log(`  Ingredients: ${food.nutritionInfo.ingredients}`);
+                                // Ingredients - try different patterns
+                                let ingredientsPatterns = [
+                                    /class="cbo_nn_LabelIngredients">([^<]+)<\/span>/i,
+                                    /Ingredients:<\/span>[^<]*<span[^>]*>([^<]+)/i,
+                                    /Ingredients"[^>]*>([^<]+)/i
+                                ];
+
+                                for (const pattern of ingredientsPatterns) {
+                                    const match = pageSource.match(pattern);
+                                    if (match && match[1]) {
+                                        food.nutritionInfo.ingredients = match[1].replace(/&nbsp;/g, ' ').trim();
+                                        console.log(`  Ingredients: ${food.nutritionInfo.ingredients}`);
+                                        break;
+                                    }
                                 }
+
+                                // Fallback to JavaScript for any missing nutrition data
+                                if (!food.nutritionInfo.servingSize || !food.nutritionInfo.calories ||
+                                    !food.nutritionInfo.totalFat || !food.nutritionInfo.carbs ||
+                                    !food.nutritionInfo.protein || !food.nutritionInfo.sodium) {
+
+                                    console.log("Using JavaScript fallback to extract nutrition data");
+
+                                    try {
+                                        const jsExtractedData = await driver.executeScript(`
+                                            const data = {};
+                                            
+                                            // Serving Size
+                                            const servingSizeEl = document.querySelector('.cbo_nn_LabelServingSize');
+                                            if (servingSizeEl) {
+                                                data.servingSize = servingSizeEl.textContent.replace('Serving Size:', '').trim();
+                                            }
+                                            
+                                            // Calories
+                                            const caloriesEl = document.querySelector('[aria-label="Calories"], .cbo_nn_LabelCalories');
+                                            if (caloriesEl) {
+                                                const calorieValue = caloriesEl.textContent.match(/(\\d+)/);
+                                                if (calorieValue) {
+                                                    data.calories = calorieValue[0];
+                                                }
+                                            }
+                                            
+                                            // Create a map of labels to find
+                                            const nutritionMap = {
+                                                'Total Fat': 'totalFat',
+                                                'Total Carbohydrate': 'carbs',
+                                                'Protein': 'protein',
+                                                'Sodium': 'sodium',
+                                                'Sugars': 'sugars'
+                                            };
+                                            
+                                            // Try to find all nutrition rows
+                                            const rows = document.querySelectorAll('.cbo_nn_NutritionRow, .cbo_nn_LabelDetailTable tr');
+                                            
+                                            for (const row of rows) {
+                                                // Get all text in the row
+                                                const rowText = row.textContent.trim();
+                                                
+                                                // Check against our nutrition map
+                                                for (const [label, dataKey] of Object.entries(nutritionMap)) {
+                                                    if (rowText.includes(label)) {
+                                                        // Extract the value (assuming format is "Label: Value")
+                                                        const valueMatch = rowText.match(new RegExp(label + '\\s*[:\\s]\\s*([\\d\\.]+\\s*[a-zA-Z%]+)'));
+                                                        if (valueMatch && valueMatch[1]) {
+                                                            data[dataKey] = valueMatch[1].trim();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            // Get ingredients
+                                            const ingredientsEl = document.querySelector('.cbo_nn_LabelIngredients');
+                                            if (ingredientsEl) {
+                                                data.ingredients = ingredientsEl.textContent.trim();
+                                            }
+                                            
+                                            return data;
+                                        `);
+
+                                        // Update missing values from JavaScript extraction
+                                        if (jsExtractedData) {
+                                            if (!food.nutritionInfo.servingSize && jsExtractedData.servingSize) {
+                                                food.nutritionInfo.servingSize = jsExtractedData.servingSize;
+                                                console.log(`  Serving Size (JS): ${food.nutritionInfo.servingSize}`);
+                                            }
+
+                                            if (!food.nutritionInfo.calories && jsExtractedData.calories) {
+                                                food.nutritionInfo.calories = jsExtractedData.calories;
+                                                console.log(`  Calories (JS): ${food.nutritionInfo.calories}`);
+                                            }
+
+                                            if (!food.nutritionInfo.totalFat && jsExtractedData.totalFat) {
+                                                food.nutritionInfo.totalFat = jsExtractedData.totalFat;
+                                                console.log(`  Total Fat (JS): ${food.nutritionInfo.totalFat}`);
+                                            }
+
+                                            if (!food.nutritionInfo.carbs && jsExtractedData.carbs) {
+                                                food.nutritionInfo.carbs = jsExtractedData.carbs;
+                                                console.log(`  Total Carbs (JS): ${food.nutritionInfo.carbs}`);
+                                            }
+
+                                            if (!food.nutritionInfo.protein && jsExtractedData.protein) {
+                                                food.nutritionInfo.protein = jsExtractedData.protein;
+                                                console.log(`  Protein (JS): ${food.nutritionInfo.protein}`);
+                                            }
+
+                                            if (!food.nutritionInfo.sodium && jsExtractedData.sodium) {
+                                                food.nutritionInfo.sodium = jsExtractedData.sodium;
+                                                console.log(`  Sodium (JS): ${food.nutritionInfo.sodium}`);
+                                            }
+
+                                            if (!food.nutritionInfo.sugars && jsExtractedData.sugars) {
+                                                food.nutritionInfo.sugars = jsExtractedData.sugars;
+                                                console.log(`  Sugars (JS): ${food.nutritionInfo.sugars}`);
+                                            }
+
+                                            if (!food.nutritionInfo.ingredients && jsExtractedData.ingredients) {
+                                                food.nutritionInfo.ingredients = jsExtractedData.ingredients;
+                                                console.log(`  Ingredients (JS): ${food.nutritionInfo.ingredients}`);
+                                            }
+                                        }
+                                    } catch (jsError) {
+                                        console.log(`JavaScript extraction error: ${jsError.message}`);
+                                    }
+                                }
+
+                                // Fill in any remaining missing values with placeholders
+                                if (!food.nutritionInfo.servingSize) food.nutritionInfo.servingSize = "Not available";
+                                if (!food.nutritionInfo.calories) food.nutritionInfo.calories = "Not available";
+                                if (!food.nutritionInfo.totalFat) food.nutritionInfo.totalFat = "Not available";
+                                if (!food.nutritionInfo.carbs) food.nutritionInfo.carbs = "Not available";
+                                if (!food.nutritionInfo.protein) food.nutritionInfo.protein = "Not available";
+                                if (!food.nutritionInfo.sodium) food.nutritionInfo.sodium = "Not available";
+                                if (!food.nutritionInfo.sugars) food.nutritionInfo.sugars = "Not available";
+                                if (!food.nutritionInfo.ingredients) food.nutritionInfo.ingredients = "Not available";
 
                                 // Close the nutrition panel
                                 try {
