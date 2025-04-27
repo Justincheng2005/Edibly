@@ -15,8 +15,32 @@ async function startScraper() {
         await driver.get('https://cbweb.smith.edu/NetNutrition/1#');
         console.log("Opened Smith College dining page");
 
-        // Wait a bit to ensure the page is loading
-        await driver.sleep(5000);
+        // Wait for the page to load
+        await driver.sleep(1000);
+
+        // Click on Chapin Hall
+        try {
+            const chapinLink = await driver.findElement(By.css('.cbo_nn_unitImageLink[onclick*="unitsSelectUnit(1)"]'));
+            await chapinLink.click();
+            console.log("Clicked on Chapin Hall");
+
+            // Wait for content to load after clicking
+            await driver.sleep(1000);
+
+            // Click on Breakfast menu
+            try {
+                const breakfastLink = await driver.findElement(By.css('.cbo_nn_menuLink[onclick*="menuListSelectMenu(1596205)"]'));
+                await breakfastLink.click();
+                console.log("Clicked on Breakfast menu");
+
+                // Wait for breakfast menu to load
+                await driver.sleep(s000);
+            } catch (breakfastError) {
+                console.error("Error clicking on Breakfast menu:", breakfastError);
+            }
+        } catch (clickError) {
+            console.error("Error clicking on Chapin Hall:", clickError);
+        }
 
         // Log the current URL to verify we're on the right page
         const currentUrl = await driver.getCurrentUrl();
