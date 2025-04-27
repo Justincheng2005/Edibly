@@ -97,16 +97,8 @@ async function startScraper() {
                                         console.log(`No standard food items found for ${mealType.name}, but no explicit 'no items' message either`);
                                     }
 
-                                    allResults.push({
-                                        name: "No Items Available",
-                                        servingSize: "N/A",
-                                        calories: "N/A",
-                                        nutrition: {},
-                                        dietaryInfo: { allergens: [], dietary: [] },
-                                        ingredients: "N/A",
-                                        mealType: mealType.name,
-                                        isPlaceholder: true
-                                    });
+                                    // No placeholder items will be added
+                                    console.log(`Skipping ${mealType.name} as no items were found`);
 
                                 } catch (finalCheckErr) {
                                     console.log(`No food items found for ${mealType.name} after all checks`);
@@ -114,17 +106,8 @@ async function startScraper() {
                             }
                         } catch (alternativeErr) {
                             console.log(`No food items found for ${mealType.name}`);
-
-                            allResults.push({
-                                name: "No Items Available",
-                                servingSize: "N/A",
-                                calories: "N/A",
-                                nutrition: {},
-                                dietaryInfo: { allergens: [], dietary: [] },
-                                ingredients: "N/A",
-                                mealType: mealType.name,
-                                isPlaceholder: true
-                            });
+                            // No placeholder items will be added
+                            console.log(`Skipping ${mealType.name} as no items were found`);
                         }
                     }
                 } catch (error) {
@@ -212,7 +195,7 @@ async function scraperInfo(driver) {
                 }
             }
 
-            let ingredients = "Not available";
+            let ingredients = "";
             try {
                 const ingredientsHeading = await driver.findElements(By.xpath("//h4[contains(text(), 'Ingredients')]"));
                 if (ingredientsHeading.length > 0) {
@@ -241,10 +224,18 @@ async function scraperInfo(driver) {
                 for (const icon of dietaryIcons) {
                     const tooltipText = await icon.getAttribute("title");
 
-                    if (tooltipText.includes("contains")) {
-                        dietaryInfo.allergens.push(tooltipText);
-                    } else {
-                        dietaryInfo.dietary.push(tooltipText);
+                    if (tooltipText && tooltipText.trim() !== "") {
+                        if (tooltipText.includes("contains")) {
+                            // Check if allergen is not already in the array to avoid duplicates
+                            if (!dietaryInfo.allergens.includes(tooltipText)) {
+                                dietaryInfo.allergens.push(tooltipText);
+                            }
+                        } else {
+                            // Check if dietary info is not already in the array to avoid duplicates
+                            if (!dietaryInfo.dietary.includes(tooltipText)) {
+                                dietaryInfo.dietary.push(tooltipText);
+                            }
+                        }
                     }
                 }
 
@@ -258,7 +249,11 @@ async function scraperInfo(driver) {
                         const labelText = await driver.findElement(
                             By.css(`#${labelType}`)
                         ).getText();
-                        dietaryInfo.dietary.push(labelText);
+
+                        // Only add non-empty dietary labels that aren't already in the array
+                        if (labelText && labelText.trim() !== "" && !dietaryInfo.dietary.includes(labelText)) {
+                            dietaryInfo.dietary.push(labelText);
+                        }
                     }
                 }
 
@@ -267,8 +262,8 @@ async function scraperInfo(driver) {
             }
 
             let nutrition = {};
-            let servingSize = "Not available";
-            let calories = "Not available";
+            let servingSize = "";
+            let calories = "";
 
             try {
                 const servingSizeElement = await driver.findElement(By.xpath("//div[contains(@class, 'nutrition-row')]//span[contains(text(), 'Serving Size')]/following-sibling::span"));
@@ -585,7 +580,29 @@ async function scraperInfo(driver) {
     await driver.sleep(5000);
     console.log("Sleep complete, returning results.");
 
-    return results;
+    // Clean up dietary information arrays to remove duplicates and empty strings
+    const cleanedResults = results.map(item => {
+        // Make a copy of the item to avoid modifying the original
+        const cleanedItem = { ...item };
+
+        // Clean allergens array
+        if (cleanedItem.dietaryInfo && cleanedItem.dietaryInfo.allergens) {
+            cleanedItem.dietaryInfo.allergens = [...new Set(
+                cleanedItem.dietaryInfo.allergens.filter(allergen => allergen && allergen.trim() !== "")
+            )];
+        }
+
+        // Clean dietary array
+        if (cleanedItem.dietaryInfo && cleanedItem.dietaryInfo.dietary) {
+            cleanedItem.dietaryInfo.dietary = [...new Set(
+                cleanedItem.dietaryInfo.dietary.filter(diet => diet && diet.trim() !== "")
+            )];
+        }
+
+        return cleanedItem;
+    });
+
+    return cleanedResults;
 }
 
 startScraper().then(results => {
