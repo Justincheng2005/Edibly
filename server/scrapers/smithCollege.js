@@ -34,7 +34,27 @@ async function startScraper() {
                 console.log("Clicked on Breakfast menu");
 
                 // Wait for breakfast menu to load
-                await driver.sleep(s000);
+                await driver.sleep(1000);
+
+                // Find all food items
+                const foodItems = await driver.findElements(By.css('.cbo_nn_itemHover'));
+                console.log(`Found ${foodItems.length} food items`);
+
+                // Process each food item
+                for (const item of foodItems) {
+                    // Get the food name
+                    const foodName = await item.getText();
+                    console.log(`Food item: ${foodName}`);
+
+                    // Hover over the item to show nutrition details
+                    const actions = driver.actions();
+                    await actions.move({ origin: item }).perform();
+                    console.log(`Hovering over ${foodName} to get nutrition info`);
+
+                    // Wait for nutrition panel to appear
+                    await driver.sleep(1000);
+                }
+
             } catch (breakfastError) {
                 console.error("Error clicking on Breakfast menu:", breakfastError);
             }
