@@ -69,6 +69,7 @@ async function startScraper() {
         for (const station of Stations) {
             console.log(`\n STARTING ${station.name.toUpperCase()} MENU SCRAPING`);
 
+            console.log(driver.getCurrentUrl());
             try{
                 const stationElement = await driver.wait(
                     until.elementLocated(By.xpath(station.xpath)),
@@ -83,29 +84,36 @@ async function startScraper() {
 
                 for (const meal of meals) {
                     const tabButton = await driver.findElement(By.xpath(`//a[@href='#${meal}']`));
-                    await tabButton.click();
-                    await driver.sleep(2000);
+                    const isActive = await tabButton.findElement(By.xpath('.//h6[contains(@class, "tab-hours")]')).getText();
+                    if (isActive !== "Closed") {
+                        await tabButton.click();
+                        await driver.sleep(2000);
 
-                    const mealDiv = await driver.findElement(By.xpath(`//div[@id='${meal}' and contains(@class, 'active')]`));
-                    
-                    // Find all food items (links that start with 'label')
-                    const foodItems = await mealDiv.findElements(By.xpath(".//a[starts-with(@href, 'label')]"));
 
-                    const foods = [];
-                    
-                    for (const foodItem of foodItems) {
-                        const name = await foodItem.getText();
-                        const url = await foodItem.getAttribute('href');
-                    
-                        foods.push({
-                        name: name.trim(),
-                        url: url.trim()
-                        });
+                        const mealDiv = await driver.findElement(By.xpath(`//div[@id='${meal}' and contains(@class, 'active')]`));
+                        
+                        // Find all food items (links that start with 'label')
+                        const foodItems = await mealDiv.findElements(By.xpath(".//a[starts-with(@href, 'label')]"));
+
+                        const foods = [];
+                        
+                        for (const foodItem of foodItems) {
+                            const name = await foodItem.getText();
+                            const url = await foodItem.getAttribute('href');
+                        
+                            foods.push({
+                            name: name.trim(),
+                            url: url.trim()
+                            });
+                        }
+                        
+                        foodItemUrls[meal] = foods;
                     }
-                    
-                    foodItemUrls[meal] = foods;
+                    else {
+                        console.log(`${meal} is closed`);
+                        foodItemUrls[meal] = [];
+                    }
                 }  
-                console.log("Food Item URLs:", JSON.stringify(foodItemUrls, null, 2));
                 try{
                     const items = await scrapeFoodItems(driver, foodItemUrls);
                     for (const meal in items) {
@@ -119,7 +127,7 @@ async function startScraper() {
                 console.log("All Results:", JSON.stringify(allResults, null, 2));
                 
                 // Go back to the station page
-                await driver.navigate().back();
+                await driver.get("https://menu.mtholyoke.edu/location.aspx");
                 await driver.sleep(2000);
 
             } catch (error) {
