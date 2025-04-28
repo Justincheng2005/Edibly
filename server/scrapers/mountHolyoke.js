@@ -61,7 +61,6 @@ async function startScraper() {
                         await tabButton.click();
                         await driver.sleep(2000);
 
-
                         const mealDiv = await driver.findElement(By.xpath(`//div[@id='${meal}' and contains(@class, 'active')]`));
                         
                         // Find all food items (links that start with 'label')
