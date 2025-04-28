@@ -1,33 +1,5 @@
 import { Builder, By, until } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome.js';
 
-// const nutritionalField = {
-//     value: String,
-//     dailyValue: String,
-//     isSubcategory: Boolean,
-// }
-
-// const foodItem = {
-//     name: String,
-//     description: String,
-//     ingredients: String,
-//     macros: {
-//         servingCount:  Number,
-//         servingSize: Number,
-//         calories: Number,
-//         totalFat: nutritionalField,
-//         saturatedFat: nutritionalField,
-//         transFat: nutritionalField,
-//         cholesterol: nutritionalField,
-//         sodium: nutritionalField,
-//         totalCarbohydrates: nutritionalField,
-//         dietaryFiber: nutritionalField,
-//         sugars: nutritionalField,
-//         protein: nutritionalField,
-//     },
-//     allergens: Array,
-//     dietaryPreferences: Array,
-// }
 
 async function startScraper() {
     let allResults = {
