@@ -14,6 +14,7 @@
     "express": "^5.1.0",
     "express-jwt": "^8.5.1",
     "jwks-rsa": "^3.2.0",
+    "node-fetch": "^3.3.2",
     "pg": "^8.14.1",
     "selenium-webdriver": "^4.31.0"
   },

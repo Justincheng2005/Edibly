@@ -1,4 +1,5 @@
 import { Builder, By, until } from 'selenium-webdriver';
+import fetch from 'node-fetch';
 
 async function startScraper() {
     let driver = await new Builder().forBrowser('chrome').build();
@@ -56,12 +57,10 @@ async function startScraper() {
                         const items = await scraperInfo(driver);
                         console.log(`Scraped ${items.length} ${mealType.name} items`);
 
-                        const typedResults = items.map(item => ({
-                            ...item,
-                            mealType: mealType.name
-                        }));
+                        // Transform the items to match the expected format for the database
+                        const transformedItems = items.map(item => transformValentineData(item, mealType.name));
 
-                        allResults = [...allResults, ...typedResults];
+                        allResults = [...allResults, ...transformedItems];
                     } else {
                         try {
                             const alternativeFoodItems = await driver.findElements(
@@ -78,12 +77,10 @@ async function startScraper() {
                                 const items = await scraperInfo(driver);
                                 console.log(`Scraped ${items.length} ${mealType.name} items using alternative approach`);
 
-                                const typedResults = items.map(item => ({
-                                    ...item,
-                                    mealType: mealType.name
-                                }));
+                                // Transform the items to match the expected format for the database
+                                const transformedItems = items.map(item => transformValentineData(item, mealType.name));
 
-                                allResults = [...allResults, ...typedResults];
+                                allResults = [...allResults, ...transformedItems];
                             } else {
                                 try {
                                     const noItemsMessage = await driver.executeScript(`
@@ -125,6 +122,79 @@ async function startScraper() {
     } finally {
         await driver.quit();
     }
+}
+
+// New function to transform Valentine Hall data to match the other scrapers' format
+function transformValentineData(item, mealName) {
+    // Create dietary restrictions array by combining allergens and dietary preferences
+    const dietaryRestrictions = [];
+
+    // Add allergens with "Contains" prefix
+    if (item.dietaryInfo && item.dietaryInfo.allergens) {
+        item.dietaryInfo.allergens.forEach(allergen => {
+            if (allergen && !dietaryRestrictions.includes(allergen)) {
+                dietaryRestrictions.push(allergen);
+            }
+        });
+    }
+
+    // Add dietary preferences directly
+    if (item.dietaryInfo && item.dietaryInfo.dietary) {
+        item.dietaryInfo.dietary.forEach(diet => {
+            if (diet && !dietaryRestrictions.includes(diet)) {
+                dietaryRestrictions.push(diet);
+            }
+        });
+    }
+
+    // Extract key nutrition values from the nutrition object
+    let totalFat = "Not available";
+    let carbs = "Not available";
+    let protein = "Not available";
+    let sodium = "Not available";
+    let sugars = "Not available";
+
+    if (item.nutrition) {
+        if (item.nutrition["Total Fat"]) {
+            totalFat = item.nutrition["Total Fat"].value || "Not available";
+        }
+
+        if (item.nutrition["Total Carbohydrate"] || item.nutrition["Carbohydrates"]) {
+            carbs = (item.nutrition["Total Carbohydrate"]?.value ||
+                item.nutrition["Carbohydrates"]?.value ||
+                "Not available");
+        }
+
+        if (item.nutrition["Protein"]) {
+            protein = item.nutrition["Protein"].value || "Not available";
+        }
+
+        if (item.nutrition["Sodium"]) {
+            sodium = item.nutrition["Sodium"].value || "Not available";
+        }
+
+        if (item.nutrition["Sugars"]) {
+            sugars = item.nutrition["Sugars"].value || "Not available";
+        }
+    }
+
+    // Create transformed object that matches the expected structure
+    return {
+        name: item.name || "Unknown Item",
+        meal: mealName,
+        diningHall: "Valentine Hall",
+        nutritionInfo: {
+            servingSize: item.servingSize || "Not available",
+            calories: item.calories || "Not available",
+            totalFat: totalFat,
+            carbs: carbs,
+            protein: protein,
+            sodium: sodium,
+            sugars: sugars,
+            ingredients: item.ingredients || "Not available"
+        },
+        dietaryRestrictions: dietaryRestrictions
+    };
 }
 
 async function scraperInfo(driver) {
@@ -609,8 +679,31 @@ startScraper().then(results => {
     console.log("Scraping completed");
     if (results.length > 0) {
         console.log(`Successfully scraped ${results.length} items`);
-        console.log("Scraped Data:");
-        console.log(JSON.stringify(results, null, 2));
+
+        // Save to database
+        console.log("Saving scraped data to database...");
+
+        // Create options for the API request
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(results)
+        };
+
+        // Use fetch to send data to the API
+        fetch('http://localhost:5000/meals/scrape', options)
+            .then(response => response.json())
+            .then(result => {
+                console.log(`Database save complete: ${result.success} items saved, ${result.errors} errors`);
+                if (result.errors > 0) {
+                    console.log("Error details:", result.details);
+                }
+            })
+            .catch(error => {
+                console.error("Error saving to database:", error);
+            });
     } else {
         console.log("No items scraped");
     }

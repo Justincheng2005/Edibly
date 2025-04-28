@@ -1,6 +1,7 @@
 import { Builder, By, until, Key } from 'selenium-webdriver';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import fetch from 'node-fetch';
 
 async function startScraper() {
     console.log("Starting Smith College Chapin Hall dining scraper");
@@ -575,6 +576,33 @@ const __filename = fileURLToPath(import.meta.url);
 if (__filename === path.resolve(process.argv[1])) {
     startScraper().then(data => {
         console.log("Scraping completed with", data.length, "items");
+
+        // Send data to API endpoint to save in database
+        if (data.length > 0) {
+            console.log("Saving scraped data to database...");
+
+            // Create options for the API request
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            // Use fetch to send data to the API
+            fetch('http://localhost:5000/meals/scrape', options)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(`Database save complete: ${result.success} items saved, ${result.errors} errors`);
+                    if (result.errors > 0) {
+                        console.log("Error details:", result.details);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error saving to database:", error);
+                });
+        }
     }).catch(err => {
         console.error("Unhandled error:", err);
     });
