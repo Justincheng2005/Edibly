@@ -13,8 +13,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/dining-halls" element={<DiningHalls />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/usrid/preferences" element={<PreferencesPage />} />
-        <Route path="/profile/usrid/allergies" element={<AllergiesPage />} />
+        <Route path="/profile/:usrid/preferences" element={<PreferencesPage />} />
+        <Route path="/profile/:usrid/allergies" element={<AllergiesPage />} />
         { }
       </Routes>
     </Router>

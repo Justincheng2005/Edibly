@@ -123,7 +123,7 @@ const ProfilePage = () => {
                                 <li>No allergies specified</li>
                             )}
                         </ul>
-                        <Link to="/profile/usrid/allergies" className="apbutton">
+                        <Link to="/profile/:usrid/allergies" className="apbutton">
                             Update Allergies
                         </Link>
                         </div>
@@ -137,7 +137,7 @@ const ProfilePage = () => {
                                     <li>No Preferences specified</li>
                                 )}
                             </ul>
-                            <Link to="/profile/usrid/preferences" className="apbutton">
+                            <Link to={`/profile/${user.sub}/preferences`} className="apbutton">
                                 Update Preferences
                             </Link>
                         </div>
