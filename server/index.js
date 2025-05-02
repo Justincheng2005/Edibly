@@ -7,7 +7,11 @@ import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 //import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+<<<<<<< HEAD
 // import { Router } from "express";
+=======
+import { Router } from "express";
+>>>>>>> 52ae5ed762c4ac543e7a395e3615943eb79b6529
 
 const PORT = process.env.PORT || 3000;
 dotenv.config();
@@ -38,8 +42,8 @@ app.get("/test", (req, res) => {
 });
 
 //test supabaseClient connection
-// const { data, error } = await supabase.from('meals').select('*');
-// console.log(data, error);
+const { data, error } = await supabase.from('meals').select('*');
+console.log(data, error);
 
 supabase.from('meals').select('*')
     .then(({ data, error }) => {
