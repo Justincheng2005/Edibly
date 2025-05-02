@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
 import supabase from './db/supabaseClient.js';
-// import mealRoutes from "./routes/mealRoutes.js";
+import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 //import allergiesRoutes from "./routes/allergiesRoutes.js";
@@ -26,7 +26,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/users', userRoutes)
-// app.use('/meals', mealRoutes)
+app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
 // app.use('/profile/:usrid/preferences', preferencesRoutes);
