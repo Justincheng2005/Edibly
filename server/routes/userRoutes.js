@@ -3,9 +3,9 @@ import { expressjwt as jwt } from "express-jwt";
 import jwksRsa from "jwks-rsa";
 import supabase from "../db/supabaseClient.js";
 
-const router = express.Router();
+export const router = express.Router();
 
-const checkJwt = jwt({
+export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
