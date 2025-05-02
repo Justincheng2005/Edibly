@@ -137,7 +137,7 @@ const ProfilePage = () => {
                                     <li>No Preferences specified</li>
                                 )}
                             </ul>
-                            <Link to={"/profile/usrid/preferences"} className="apbutton">
+                            <Link to="/profile/usrid/preferences" className="apbutton">
                                 Update Preferences
                             </Link>
                         </div>
