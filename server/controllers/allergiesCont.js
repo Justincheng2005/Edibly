@@ -1,4 +1,3 @@
-import { error } from 'selenium-webdriver';
 import supabase from '../db/supabaseClient.js';
 
 console.log('Supabase instance:', supabase);

@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { getStaticAllergyList, updateAllergiesListToDB } from "../controllers/allergiesCont.js";
-// import { expressjwt as ejwt } from "express-jwt";
-// import jwksRsa from "jwks-rsa";
 import { checkJwt } from "./userRoutes.js";
 import supabase from "../db/supabaseClient.js";
 

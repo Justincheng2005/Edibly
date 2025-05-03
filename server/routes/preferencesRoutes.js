@@ -60,58 +60,5 @@ router.post("/preferences", checkJwt, async (req, res) => {
     }
 });
 
-/*
-router.post('/:usrid/preferences', checkJwt, (req, res) => {
-    const auth0Id = req.auth.sub;
-    const {preferenceIds} = req.body;
-    // const preferenceIds = req.body.preferenceIds;
-    if (!preferenceIds) {
-        return res.status(400).json({ error: 'preferenceIds is required' });
-    }
-    supabase.from('users')
-        .select('userid')
-        .eq('auth0_id', auth0Id)
-        .single()
-        .then(({ data: user, error: userError }) => {
-            if (userError) {
-                console.error('User lookup error:', userError);
-                throw userError;
-            }
-            if (!preferenceIds) {
-                throw new Error('preferenceIds is required');
-            }
-            return updatePreferencesListToDB(user.userid, preferenceIds);
-        })
-        .then(() => res.json({success: true}))
-        .catch(error => {
-            console.error('Error saving preferences:', error);
-            res.status(500).json({ 
-                error: error.message || 'Failed to save preferences from POST.',
-                details: error.details 
-            });
-    });    
-});
-*/
-
-// router.get('/preferences', (req,res) => {
-//     const auth0UserId = req.auth.sub;
-//     const urlUserId = req.params.usrid;
-  
-//     if (auth0UserId !== urlUserId) {
-//         return res.status(403).json({ error: 'Unauthorized' });
-//     }
-//     getStaticPreferenceList(req,res);
-
-// });
-// router.get('/:usrid/preferences', checkJwt, (req,res) => {
-//     const auth0UserId = req.auth.sub;
-//     const urlUserId = req.params.usrid;
-  
-//     if (auth0UserId !== urlUserId) {
-//         return res.status(403).json({ error: 'Unauthorized' });
-//     }
-//     getStaticPreferenceList(req,res);
-
-// });
 
 export default router;
