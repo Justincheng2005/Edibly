@@ -43,10 +43,6 @@ export const fetchStaticPreferencesList = () => {
             console.error('Fetch error:', error);
             throw error;
         });
-    //     .then(data => {
-    //     console.log('Received data:', data);
-    //     return data;
-    // });
   };
   
 // export const checkBackendConnection = () => {
@@ -64,13 +60,49 @@ export const fetchStaticPreferencesList = () => {
 // };
 
 export const updatePreferencesList = (userId, preferenceIds, token) => {
-    return fetch(`${API_BASE_URL}/profile/${encodeURIComponent(userId)}/preferences`, {
+    return fetch(`${API_BASE_URL}/profile/preferences`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ preferenceIds })
+    })
+    .then(response => {
+        const contentType = response.headers.get('content-type');
+        
+        // Handle HTML error responses
+        if (contentType && contentType.includes('text/html')) {
+            return response.text().then(html => {
+                const errorMatch = html.match(/<pre>Error: (.*?)<br>/);
+                const errorMessage = errorMatch ? errorMatch[1] : 'Backend processing error';
+                throw new Error(`Backend Error: ${errorMessage}`);
+            });
+        }
+        
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.error || `Server error: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Detailed error:', error);
+        if (error.message.includes('Failed to fetch')) {
+            throw new Error('Could not connect to backend server. Please check:\n1. Backend is running\n2. Correct port (3000)');
+        }
+        throw error;
+    });
+};
+export const updateAllergiesList = (userId, allergyIds, token) => {
+    return fetch(`${API_BASE_URL}/profilee/allergies`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ allergyIds })
     })
     .then(response => {
         const contentType = response.headers.get('content-type');
@@ -170,15 +202,18 @@ export const updatePreferencesList = (userId, preferenceIds, token) => {
 //         });
 // };
 
-export const fetchStaticAllergiesList = (usrid) => {
-    return fetch(`${API_BASE_URL}/profile/${usrid}/allergies`)
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Network Response is invalid');
-            }
+export const fetchStaticAllergiesList = () => {
+    return fetch(`${API_BASE_URL}/profilee/allergies`) //problem??
+        .then(res => {
+            console.log('Response status:', res.status);
+                if (!res.ok){
+                    console.error('Response not OK:', res.statusText);
+                    throw new Error(`Server responded with ${res.status}`);
+                }
             return res.json();
         })
-        .catch((error) =>{
-            console.error('Fetch Error:', error);
-        })
-}
+        .catch(error => {
+            console.error('Fetch error:', error);
+            throw error;
+        });
+  };

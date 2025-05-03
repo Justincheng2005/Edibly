@@ -19,34 +19,44 @@ router.get('/preferences', (req,res) => {
         })
 });
 
-router.post('/:usrid/preferences', checkJwt, (req, res) => {
+router.post("/preferences", checkJwt, async (req, res) => {
     try {
         const auth0Id = req.auth.sub;
         const { preferenceIds } = req.body;
 
+        if (!auth0Id) {
+            return res.status(401).json({ error: "Unauthorized: Missing auth0Id" });
+        }
+
         if (!preferenceIds) {
-            return res.status(400).json({ error: 'preferenceIds is required' });
+            return res.status(400).json({ error: "preferenceIds is required" });
         }
 
-        // Verify this is the same user making the request
-        if (auth0Id !== req.params.usrid) {
-            return res.status(403).json({ error: 'Unauthorized' });
+        const { data: existingUser, error: findError } = await supabase
+            .from("users")
+            .select("userid")
+            .eq("auth0_id", auth0Id)
+            .single();
+
+        if (findError) {
+            console.error("Supabase error:", findError);
+            return res.status(500).json({ error: "Database query failed" });
         }
 
-        // Add debug logging
-        console.log('Updating preferences for:', auth0Id);
-        console.log('Preferences to save:', preferenceIds);
+        if (!existingUser) {
+            return res.status(404).json({ error: "Associated user not found" });
+        }
 
-        // Process the preferences
-        updatePreferencesListToDB(auth0Id, preferenceIds)
-            .then(() => res.json({ success: true }))
-            .catch(error => {
-                console.error('Database error:', error);
-                res.status(500).json({ error: 'Database operation failed' });
-            });
+        console.log("Updating preferences for:", existingUser.userid);
+        console.log("Preferences to save:", preferenceIds);
+        console.log("")
+
+        await updatePreferencesListToDB(existingUser.userid, preferenceIds);
+
+        return res.json({ success: true });
     } catch (error) {
-        console.error('Route handler error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Route handler error:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 

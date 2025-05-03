@@ -64,11 +64,11 @@ router.get("/user/allergies", checkJwt, async (req, res) => {
 
     const {data:allergies, error:allergyError} = await supabase
     .from("userallergies")
-    .select("allergies(FoodName)")
+    .select("allergies(allergyname)")
     .eq("userid", existingUser.userid)
 
     if (allergyError) throw allergyError;
-    res.json({ allergies: allergies.map(a => a.allergies.foodname) });
+    res.json({ allergies: allergies.map(a => a.allergies.allergyname) });
   } catch (err) {
     console.error("Error getting allergies:", err.message);
     res.status(500).json({ error: "Failed to fetch allergies" });

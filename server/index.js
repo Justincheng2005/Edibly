@@ -5,7 +5,7 @@ import supabase from './db/supabaseClient.js';
 import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
-//import allergiesRoutes from "./routes/allergiesRoutes.js";
+import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { Router } from "express";
 
@@ -29,8 +29,7 @@ app.use('/users', userRoutes)
 app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
-// app.use('/profile/:usrid/preferences', preferencesRoutes);
-// app.use('/profile/:usrid/allergies', allergiesRoutes);
+app.use('/profilee', allergiesRoutes);
 
 // basic route
 app.get("/test", (req, res) => {
