@@ -20,6 +20,7 @@ const ProfilePage = () => {
     const syncUser = async (getAccessTokenSilently) => {
         try {
           const token = await getAccessTokenSilently();
+          console.log("Decoded token:", JSON.parse(atob(token.split('.')[1])));
           const res = await axios.get("http://localhost:3000/users/user", {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -15,38 +15,37 @@ export const getStaticPreferenceList = () =>{
     });
 };
 
-export const updatePreferencesListToDB = (usrid, preferenceIdList) => {
-    return supabase.from('userpreferences')
-        .delete()
-        .eq('userid', usrid)
-        .then(({ error: deleteError }) => {
-            if (deleteError) throw deleteError;
-            // if (preferenceIds.length === 0) {
-            //     return { success: true };
-            // }
+export const updatePreferencesListToDB = async (usrid, preferenceIdList) => {
+    try {
+        const { error: deleteError } = await supabase
+            .from("userpreferences")
+            .delete()
+            .eq("userid", usrid);
 
-            if (!preferenceIdList || preferenceIdList.length === 0) {
-                return { success: true };
-            }
-            const preferencesToInsert = preferenceIdList.map(prefid => ({
-                userid: usrid,
-                preferenceid: prefid
+        if (deleteError) throw deleteError;
+
+        if (!preferenceIdList || preferenceIdList.length === 0) {
+            return { success: true };
+        }
+
+        const preferencesToInsert = preferenceIdList.map(prefid => ({
+            userid: usrid,
+            preferenceid: prefid
         }));
-        
-        return supabase.from('userpreferences')
-            .insert(preferencesToInsert)
-            .then(({ error: insertError }) => {
-                if (insertError) {
-                    console.error('Insert error:', insertError);
-                    throw insertError;}
-                return { success: true };
-            });
-        })
-        .catch(error => {
-            console.error('Error in updatePreferencesListToDB:', error);
-            throw error;
-        });    
+
+        const { error: insertError } = await supabase
+            .from("userpreferences")
+            .insert(preferencesToInsert);
+
+        if (insertError) throw insertError;
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error in updatePreferencesListToDB:", error);
+        return { success: false, error };
+    }
 };
+
 
 // export const getStaticPreferenceList = (req, res) =>{
 //     const usrId = req.params.usrid;
