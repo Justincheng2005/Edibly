@@ -38,13 +38,9 @@ app.get("/test", (req, res) => {
 });
 
 //test supabaseClient connection
-const { data, error } = await supabase.from('meals').select('*');
-console.log(data, error);
+// const { data, error } = await supabase.from('meals').select('*');
+// console.log(data, error);
 
-supabase.from('meals').select('*')
-    .then(({ data, error }) => {
-        console.log('Supabase connection test:', data, error);
-});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
