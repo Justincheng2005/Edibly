@@ -1,4 +1,4 @@
-import supabase from "../db/supabaseClient";
+import supabase from "../db/supabaseClient.js";
 
 export const getSearchedMeals = async (mealQuery) => {
     try{

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { getSearchedMeals } from "../controllers/mealSearchCont";
+import { getSearchedMeals } from "../controllers/mealSearchCont.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get('/', async(req, res) => {
     try{
