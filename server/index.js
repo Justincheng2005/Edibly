@@ -7,24 +7,21 @@ import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 //import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-<<<<<<< HEAD
-// import { Router } from "express";
-=======
+import mealSearchRoutes from "./routes/mealSearchRoutes.js"
 import { Router } from "express";
->>>>>>> 52ae5ed762c4ac543e7a395e3615943eb79b6529
 
 const PORT = process.env.PORT || 3000;
 dotenv.config();
 const app = express();
 
-// const router = Router();
-// router.get('/connection-test', (req, res) => {
-//     res.json({ 
-//         status: 'ok', 
-//         backend: 'running',
-//         timestamp: new Date().toISOString()
-//     });
-// });
+const router = Router();
+router.get('/connection-test', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        backend: 'running',
+        timestamp: new Date().toISOString()
+    });
+});
 //middleware
 app.use(cors())
 app.use(express.json())
@@ -35,6 +32,7 @@ app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
 // app.use('/profile/:usrid/preferences', preferencesRoutes);
 // app.use('/profile/:usrid/allergies', allergiesRoutes);
+app.use('/meals-search', mealSearchRoutes);
 
 // basic route
 app.get("/test", (req, res) => {

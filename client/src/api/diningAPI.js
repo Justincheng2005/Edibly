@@ -182,3 +182,16 @@ export const fetchStaticAllergiesList = (usrid) => {
             console.error('Fetch Error:', error);
         })
 }
+
+export const fetchSearchMeals = async (mealQuery) => {
+    try{
+        const response = await fetch(`${API_BASE_URL}/meals/search?query=${encodeURIComponent(mealQuery)}`);
+        if(!response.ok){
+            throw new Error(await response.text());
+        }
+        return await response.json();
+    }catch(error) {
+        console.error('Search for meals failed:', error);
+        throw error;
+    }
+};
