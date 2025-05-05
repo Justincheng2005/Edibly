@@ -9,7 +9,7 @@ import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { Router } from "express";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 dotenv.config();
 const app = express();
 
@@ -29,7 +29,7 @@ app.use('/users', userRoutes)
 app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
-app.use('/profilee', allergiesRoutes);
+app.use('/profile', allergiesRoutes);
 
 // basic route
 app.get("/test", (req, res) => {

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000'; //backend running on port 5000
+const API_BASE_URL = 'http://localhost:3000'; //backend running on port 3000
 
 export const fetchAllDiningLocations = async () => {
     try {
@@ -76,13 +76,13 @@ export const updatePreferencesList = (userId, preferenceIds, token) => {
         .catch(error => {
             console.error('Detailed error:', error);
             if (error.message.includes('Failed to fetch')) {
-                throw new Error('Could not connect to backend server. Please check:\n1. Backend is running\n2. Correct port (5000)');
+                throw new Error('Could not connect to backend server. Please check:\n1. Backend is running\n2. Correct port (3000)');
             }
             throw error;
         });
 };
 export const updateAllergiesList = (userId, allergyIds, token) => {
-    return fetch(`${API_BASE_URL}/profilee/allergies`, {
+    return fetch(`${API_BASE_URL}/profile/allergies`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -111,14 +111,14 @@ export const updateAllergiesList = (userId, allergyIds, token) => {
         .catch(error => {
             console.error('Detailed error:', error);
             if (error.message.includes('Failed to fetch')) {
-                throw new Error('Could not connect to backend server. Please check:\n1. Backend is running\n2. Correct port (5000)');
+                throw new Error('Could not connect to backend server. Please check:\n1. Backend is running\n2. Correct port (3000)');
             }
             throw error;
         });
 };
 
 export const fetchStaticAllergiesList = () => {
-    return fetch(`${API_BASE_URL}/profilee/allergies`) //problem??
+    return fetch(`${API_BASE_URL}/profile/allergies`) //problem??
         .then(res => {
             console.log('Response status:', res.status);
             if (!res.ok) {

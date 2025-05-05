@@ -1,0 +1,124 @@
+.filter-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.filter-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.filter-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #971B2F;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.filter-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.filter-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+}
+
+.filter-modal-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.filter-summary {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    color: #333;
+}
+
+.filtered-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filtered-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px 15px;
+    background-color: #fafafa;
+}
+
+.filtered-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.filter-reasons {
+    margin-top: 8px;
+}
+
+.filter-reasons p {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+}
+
+.filter-reasons ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.filter-reasons li {
+    margin-bottom: 3px;
+    font-size: 14px;
+    color: #555;
+}
+
+.filter-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.filter-btn-primary {
+    background-color: #971B2F;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filter-btn-primary:hover {
+    background-color: #7a1727;
+}

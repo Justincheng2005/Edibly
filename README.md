@@ -28,7 +28,7 @@ Edibly is a web application that helps students find and explore dining options 
 Create a `.env` file in the server directory with the following variables:
 
 ```
-PORT=5000
+PORT=3000
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
