@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { insertScrapedMeals } from '../controllers/mealCont.js';
+import { insertScrapedMeals, getMealsByDiningHallId } from '../controllers/mealCont.js';
 
 const router = Router();
 
@@ -25,5 +25,11 @@ router.post('/scrape', async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+
+/**
+ * GET /meals/dining/:diningId
+ * Get all meals for a specific dining hall
+ */
+router.get('/dining/:diningId', getMealsByDiningHallId);
 
 export default router;

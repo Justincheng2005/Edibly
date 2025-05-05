@@ -215,3 +215,36 @@ async function processPreference(mealId, preferenceName) {
         console.error(`Error processing preference "${preferenceName}" for meal ${mealId}:`, error.message);
     }
 }
+
+/**
+ * Get all meals for a specific dining hall
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+ */
+export const getMealsByDiningHallId = async (req, res) => {
+    try {
+        const { diningId } = req.params;
+
+        // Convert to integer to ensure proper comparison
+        const diningHallId = parseInt(diningId, 10);
+
+        if (isNaN(diningHallId)) {
+            return res.status(400).json({ error: 'Invalid dining hall ID format' });
+        }
+
+        // Get meals for this dining hall
+        const { data: meals, error } = await supabase
+            .from('meals')
+            .select('*')
+            .eq('diningid', diningHallId);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        return res.status(200).json(meals);
+    } catch (err) {
+        console.error('Error getting meals by dining hall ID:', err);
+        return res.status(500).json({ error: err.message });
+    }
+};

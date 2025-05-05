@@ -9,14 +9,14 @@ import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { Router } from "express";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 dotenv.config();
 const app = express();
 
 const router = Router();
 router.get('/connection-test', (req, res) => {
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         backend: 'running',
         timestamp: new Date().toISOString()
     });
@@ -43,7 +43,7 @@ console.log(data, error);
 supabase.from('meals').select('*')
     .then(({ data, error }) => {
         console.log('Supabase connection test:', data, error);
-});
+    });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
