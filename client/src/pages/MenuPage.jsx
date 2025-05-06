@@ -72,7 +72,7 @@ const MenuPage = () => {
 
             // Try to make a direct authenticated request
             try {
-                const res = await axios.get("http://localhost:5000/users/user", {
+                const res = await axios.get("http://localhost:3000/users/user", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -116,7 +116,7 @@ const MenuPage = () => {
             console.log("User ID being used for allergies:", user?.sub);
 
             try {
-                const res = await axios.get("http://localhost:5000/users/user/allergies", {
+                const res = await axios.get("http://localhost:3000/users/user/allergies", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -156,7 +156,7 @@ const MenuPage = () => {
             console.log("User ID being used for preferences:", user?.sub);
 
             try {
-                const res = await axios.get("http://localhost:5000/users/user/preferences", {
+                const res = await axios.get("http://localhost:3000/users/user/preferences", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

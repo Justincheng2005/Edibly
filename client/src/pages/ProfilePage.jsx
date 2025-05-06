@@ -21,7 +21,7 @@ const ProfilePage = () => {
         try {
             const token = await getAccessTokenSilently();
             console.log("Decoded token:", JSON.parse(atob(token.split('.')[1])));
-            const res = await axios.get("http://localhost:5000/users/user", {
+            const res = await axios.get("http://localhost:3000/users/user", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -37,7 +37,7 @@ const ProfilePage = () => {
     const fetchUserAllergies = async (getAccessTokenSilently, setUserAllergies) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await axios.get("http://localhost:5000/users/user/allergies", {
+            const res = await axios.get("http://localhost:3000/users/user/allergies", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -50,7 +50,7 @@ const ProfilePage = () => {
     const fetchUserPreferences = async (getAccessTokenSilently, setUserPreferences) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await axios.get("http://localhost:5000/users/user/preferences", {
+            const res = await axios.get("http://localhost:3000/users/user/preferences", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

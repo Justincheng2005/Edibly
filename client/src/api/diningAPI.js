@@ -82,7 +82,7 @@ export const updatePreferencesList = (userId, preferenceIds, token) => {
         });
 };
 export const updateAllergiesList = (userId, allergyIds, token) => {
-    return fetch(`${API_BASE_URL}/profile/allergies`, {
+    return fetch(`${API_BASE_URL}/profilee/allergies`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ export const updateAllergiesList = (userId, allergyIds, token) => {
 };
 
 export const fetchStaticAllergiesList = () => {
-    return fetch(`${API_BASE_URL}/profile/allergies`) //problem??
+    return fetch(`${API_BASE_URL}/profilee/allergies`) //problem??
         .then(res => {
             console.log('Response status:', res.status);
             if (!res.ok) {

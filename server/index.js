@@ -29,7 +29,7 @@ app.use('/users', userRoutes)
 app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
-app.use('/profile', allergiesRoutes);
+app.use('/profilee', allergiesRoutes);
 
 // basic route
 app.get("/test", (req, res) => {
