@@ -7,8 +7,8 @@ router.get('/', async(req, res) => {
     try{
         const {mealQuery} = req.query;
         if(!mealQuery){return res.status(400).json({error: 'Search query is missing'})};
-        const mealResults = await getSearchedMeals(mealQuery);
-        res.json({mealResults});
+        const results = await getSearchedMeals(mealQuery);
+        res.json({results});
     }catch(error){
         res.status(500).json({error: error.message});
     }

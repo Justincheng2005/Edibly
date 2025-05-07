@@ -5,7 +5,7 @@ export const getSearchedMeals = async (mealQuery) => {
         const {data, error} = await supabase
             .from('meals')
             .select('*')  //Might change later!!!!!!!!!!!!!!!!!!!!
-            .or(`name.ilike.%${mealQuery}%, ingredients.ilike.%${mealQuery}%, macros.ilike.%${mealQuery}%,, description.ilike.%${mealQuery}%`)
+            .or(`name.ilike.%${mealQuery}%, ingredients.ilike.%${mealQuery}%, macros.ilike.%${mealQuery}%, description.ilike.%${mealQuery}%`)
             .limit(50);
 
             if(error) throw error;

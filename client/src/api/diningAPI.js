@@ -189,7 +189,10 @@ export const fetchSearchMeals = async (mealQuery) => {
         if(!response.ok){
             throw new Error(await response.text());
         }
-        return await response.json();
+        const data = await response.json();
+        console.log('Api response data:', data); // Log the response data for debugging
+        return data.results || data;
+        // return await response.json();//?????????
     }catch(error) {
         console.error('Search for meals failed:', error);
         throw error;
