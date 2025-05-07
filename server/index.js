@@ -15,8 +15,8 @@ const app = express();
 
 const router = Router();
 router.get('/connection-test', (req, res) => {
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         backend: 'running',
         timestamp: new Date().toISOString()
     });
@@ -40,6 +40,10 @@ app.get("/test", (req, res) => {
 // const { data, error } = await supabase.from('meals').select('*');
 // console.log(data, error);
 
+supabase.from('meals').select('*')
+    .then(({ data, error }) => {
+        console.log('Supabase connection test:', data, error);
+    });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

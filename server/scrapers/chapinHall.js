@@ -591,7 +591,7 @@ if (__filename === path.resolve(process.argv[1])) {
             };
 
             // Use fetch to send data to the API
-            fetch('http://localhost:5000/meals/scrape', options)
+            fetch('http://localhost:3000/meals/scrape', options)
                 .then(response => response.json())
                 .then(result => {
                     console.log(`Database save complete: ${result.success} items saved, ${result.errors} errors`);
