@@ -2,12 +2,13 @@ import { Builder, By, until } from 'selenium-webdriver';
 
 
 async function startScraper() {
-    let allResults = {
-        // date: "", maybe add in future if we want to store future days
-        Breakfast: [],
-        Lunch: [],
-        Dinner: [],
-    };
+    // let allResults = {
+    //     date: "", maybe add in future if we want to store future days
+    //     Breakfast: [],
+    //     Lunch: [],
+    //     Dinner: [],
+    // };
+    let allResults = [];
     //Chrome options
     // let options = new chrome.Options();
     // options.addArguments('--headless');
@@ -35,7 +36,7 @@ async function startScraper() {
             { name: "Wok", xpath: "//a[contains(@href, 'Wok')]" },
             { name: "Baraka -Halal", xpath: "//a[contains(@href, 'Baraka')]" },
             { name: "Harvest/Deserts", xpath: "//a[contains(@href, 'Harvest')]" },
-            { name: "L'Chaim -Kosher", xpath: "//a[contains(@href, 'L'Chaim')]" }
+            { name: "L'Chaim -Kosher", xpath: "//a[contains(@href, 'Kosher')]" }
         ];
 
         for (const station of Stations) {
@@ -86,10 +87,7 @@ async function startScraper() {
                     }
                 }  
                 try{
-                    const items = await scrapeFoodItems(driver, foodItemUrls);
-                    for (const meal in items) {
-                        allResults[meal].push(...items[meal]);
-                    }
+                    allResults = await scrapeFoodItems(driver, foodItemUrls);
                 } catch (error) {
                     console.error("Error scraping food items:", error);
                 }
@@ -105,23 +103,20 @@ async function startScraper() {
                 console.error("Error:", error);
             }
         }
+        
     } catch (error) {
         console.error("Error:", error);
-        return results;
     } finally {
         await driver.quit();
     }
+    return allResults;
 }
 
 
 
 async function scrapeFoodItems(driver, foodItemUrls) {
     // This function will scrape the food items from the page
-    let results = {
-        Breakfast: [],
-        Lunch: [],
-        Dinner: [],
-    };
+    let results = [];
     for ( const meal in foodItemUrls) {
         for ( const foodItem of foodItemUrls[meal]) {
             await driver.get(foodItem.url);
@@ -156,9 +151,16 @@ async function scrapeFoodItems(driver, foodItemUrls) {
                             let label = "";
                             let amount = "";
     
+                            
                             if (lastSpaceIndex !== -1) {
-                            label = cleanedText.substring(0, lastSpaceIndex).trim();
-                            amount = cleanedText.substring(lastSpaceIndex + 1).trim();
+                                if(cleanedText.substring(0,3) === "Inc") {
+                                    label = "Added Sugars";
+                                    amount = cleanedText.split(" ")[1].trim();
+                                }
+                                else{
+                                    label = cleanedText.substring(0, lastSpaceIndex).trim();
+                                    amount = cleanedText.substring(lastSpaceIndex + 1).trim();
+                                }
                             }
     
                             // Find the daily value
@@ -180,14 +182,14 @@ async function scrapeFoodItems(driver, foodItemUrls) {
                 }
     
                 //scrape allergens
-                let allergens = [];
+                let dietaryRestrictions = [];
                 try {
                     const allergensText = await driver.findElement(By.xpath("//span[class='labelallergensvalue']")).getText();
                     if (allergensText === "") {
                         console.log("No allergens found");
                     }
                     else{
-                        allergens = allergensText.split(",").map(allergen => allergen.trim());
+                        dietaryRestrictions.push(allergensText.split(",").map(allergen => allergen.trim()));
                     }
                 } catch (error) {
                     if (error.name !== 'NoSuchElementError') {
@@ -196,13 +198,12 @@ async function scrapeFoodItems(driver, foodItemUrls) {
                 }
     
                 //scrape dietary preferences
-                let dietaryPreferences = [];
                 try {
                     const spanElement = await driver.findElement(By.xpath("//span[class='labelwebcodesvalue']"));
                     const imgElements = await spanElement.findElements(By.css('img'));
     
                     for ( let img of imgElements) {
-                        dietaryPreferences.push(await img.getAttribute('alt'));
+                        dietaryRestrictions.push(await img.getAttribute('alt'));
                     }
                 } catch (error) {
                     if (error.name !== 'NoSuchElementError') {
@@ -210,13 +211,26 @@ async function scrapeFoodItems(driver, foodItemUrls) {
                     }
                 }
                 
-                results[meal].push({
+                results.push({
                     name: foodItemName,
-                    description,
-                    ingredients,
-                    macros,
-                    allergens,
-                    dietaryPreferences
+                    description: description,
+                    diningHall: "Mount Holyoke Dining Commons",
+                    nutritionInfo: {
+                        servingSize: macros.servingSize,
+                        calories: macros.calories || "Not available",
+                        totalFat: macros["Total Fat"]?.amount || "Not available",
+                        saturatedFat: macros["Saturated Fat"]?.amount || "Not available",
+                        transFat: macros["Trans Fat"]?.amount || "Not available",
+                        cholesterol: macros["Cholesterol"]?.amount || "Not available",
+                        sodium: macros["Sodium"]?.amount || "Not available",
+                        carbs: macros["Total Carbohydrate"]?.amount || "Not available",
+                        fiber: macros["Dietary Fiber"]?.amount || "Not available",
+                        protein: macros["Protein"]?.amount || "Not available",
+                        sugars: macros["Total Sugars"]?.amount || "Not available",
+                        addedSugars: macros["Added Sugars"]?.amount || "Not available",
+                        ingredients: ingredients || "Not available",
+                    },
+                    dietaryRestrictions: dietaryRestrictions
                 });
     
             } catch (error) {
@@ -232,8 +246,30 @@ startScraper().then(results => {
     console.log("Scraping completed");
     if (results.length > 0) {
         console.log(`Successfully scraped ${results.length} items`);
-        console.log("Scraped Data:");
-        console.log(JSON.stringify(results, null, 2));
+
+        console.log("Saving scraped data to database...");
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(results)
+        };
+        
+        fetch('http://localhost:3000/meals/scrape', options)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data saved successfully:", data);
+            })
+            .catch(error => {
+                console.error("Error saving data:", error);
+            });
     } else {
         console.log("No items scraped");
     }

@@ -40,17 +40,22 @@ export const insertScrapedMeals = async (scrapedData) => {
             const mealData = {
                 name: foodItem.name,
                 diningid: diningLocation.diningid,
-                description: '',
+                description: foodItem.description || '',
                 ingredients: foodItem.nutritionInfo.ingredients || '',
                 // Store nutrition info as JSON in macros field
                 macros: JSON.stringify({
-                    servingSize: foodItem.nutritionInfo.servingSize,
-                    calories: foodItem.nutritionInfo.calories,
-                    totalFat: foodItem.nutritionInfo.totalFat,
-                    carbs: foodItem.nutritionInfo.carbs,
-                    protein: foodItem.nutritionInfo.protein,
-                    sodium: foodItem.nutritionInfo.sodium,
-                    sugars: foodItem.nutritionInfo.sugars
+                    "Serving Size": foodItem.nutritionInfo.servingSize,
+                    Calories: foodItem.nutritionInfo.calories,
+                    "Total Fat": foodItem.nutritionInfo.totalFat,
+                    "Saturated Fat": foodItem.nutritionInfo.saturatedFat || '',
+                    "Tran Fat": foodItem.nutritionInfo.transFat || '',
+                    Cholesterol: foodItem.nutritionInfo.cholesterol || '',
+                    "Total Carbohydrates": foodItem.nutritionInfo.carbs,
+                    "Dietary Fiber": foodItem.nutritionInfo.fiber,
+                    "Total Sugars": foodItem.nutritionInfo.sugars,
+                    "Added Sugars": foodItem.nutritionInfo.addedSugars || '',
+                    Protein: foodItem.nutritionInfo.protein,
+                    Sodium: foodItem.nutritionInfo.sodium,
                 })
             };
 
@@ -114,7 +119,7 @@ async function processDietaryRestrictions(mealName, diningId, restrictions) {
         'Contains Gluten': { type: 'allergy', name: 'Gluten' },
         'Contains Fish': { type: 'allergy', name: 'Fish' },
         'Contains Shellfish': { type: 'allergy', name: 'Shellfish' },
-        'Contains Tree Nuts': { type: 'allergy', name: 'Tree Nuts' },
+        'Contains Tree Nuts': { type: 'allergy', name: 'Tree Nuts' || 'Tree/Nuts' },
         'Contains Peanuts': { type: 'allergy', name: 'Peanuts' },
         'Contains Corn': { type: 'allergy', name: 'Corn' },
         'Contains Sesame': { type: 'allergy', name: 'Sesame' },
@@ -153,7 +158,7 @@ async function processAllergy(mealId, allergyName) {
         const { data: allergyData, error: allergyError } = await supabase
             .from('allergies')
             .select('allergyid')
-            .eq('FoodName', allergyName)
+            .eq('allergyname', allergyName)
             .maybeSingle();
 
         if (allergyError) throw new Error(`Allergy lookup error: ${allergyError.message}`);
@@ -215,3 +220,36 @@ async function processPreference(mealId, preferenceName) {
         console.error(`Error processing preference "${preferenceName}" for meal ${mealId}:`, error.message);
     }
 }
+
+/**
+ * Get all meals for a specific dining hall
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+ */
+export const getMealsByDiningHallId = async (req, res) => {
+    try {
+        const { diningId } = req.params;
+
+        // Convert to integer to ensure proper comparison
+        const diningHallId = parseInt(diningId, 10);
+
+        if (isNaN(diningHallId)) {
+            return res.status(400).json({ error: 'Invalid dining hall ID format' });
+        }
+
+        // Get meals for this dining hall
+        const { data: meals, error } = await supabase
+            .from('meals')
+            .select('*')
+            .eq('diningid', diningHallId);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        return res.status(200).json(meals);
+    } catch (err) {
+        console.error('Error getting meals by dining hall ID:', err);
+        return res.status(500).json({ error: err.message });
+    }
+};

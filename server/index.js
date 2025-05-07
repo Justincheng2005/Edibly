@@ -5,7 +5,7 @@ import supabase from './db/supabaseClient.js';
 import mealRoutes from "./routes/mealRoutes.js";
 import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
-//import allergiesRoutes from "./routes/allergiesRoutes.js";
+import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import mealSearchRoutes from "./routes/mealSearchRoutes.js"
 import { Router } from "express";
@@ -16,8 +16,8 @@ const app = express();
 
 const router = Router();
 router.get('/connection-test', (req, res) => {
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         backend: 'running',
         timestamp: new Date().toISOString()
     });
@@ -30,9 +30,8 @@ app.use('/users', userRoutes)
 app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
-// app.use('/profile/:usrid/preferences', preferencesRoutes);
-// app.use('/profile/:usrid/allergies', allergiesRoutes);
 app.use('/meals-search', mealSearchRoutes);
+app.use('/profilee', allergiesRoutes);
 
 // basic route
 app.get("/test", (req, res) => {
@@ -40,13 +39,13 @@ app.get("/test", (req, res) => {
 });
 
 //test supabaseClient connection
-const { data, error } = await supabase.from('meals').select('*');
-console.log(data, error);
+// const { data, error } = await supabase.from('meals').select('*');
+// console.log(data, error);
 
 supabase.from('meals').select('*')
     .then(({ data, error }) => {
         console.log('Supabase connection test:', data, error);
-});
+    });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

@@ -24,9 +24,11 @@ const DiningHalls = () => {
       try {
         setLoading(true);
         const data = await fetchAllDiningLocations();
+        console.log("Dining hall data:", data); // Debug: Log the data structure
+
         // Map data to our component structure
         const hallsWithImages = data.map(hall => ({
-          id: hall.id,
+          id: hall.diningid, // Use diningid from the database
           name: hall.name,
           college: hall.school,
           description: `Hours: ${hall.hours}`,
@@ -53,10 +55,10 @@ const DiningHalls = () => {
   return (
     <div>
       {/* UMass style header */}
-      <MainHeader/>
+      <MainHeader />
 
       {/* Red Navbar */}
-      <Navbar/>
+      <Navbar />
 
       <div className="dining-halls-container" style={{ padding: "20px" }}>
         {loading ? (

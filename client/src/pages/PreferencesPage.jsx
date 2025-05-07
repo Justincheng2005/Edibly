@@ -13,13 +13,6 @@ const PreferencesPage = () => {
     const [loading,setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-
-    // const handlePref = (event) =>{
-    //     const value = event.target.value;
-    //     setSelectedPref((prev)=>{
-    //         return prev.includes(value) ? prev.filter(e => e != value) : [...prev,value]
-    //     });
-    // };
     
     // const {user, isAuthenticated, getAccessTokenSilently} = useAuth0();
     const {user, getAccessTokenSilently, isAuthenticated, loginWithRedirect} = useAuth0();
@@ -61,20 +54,6 @@ const PreferencesPage = () => {
         }
     }, [isAuthenticated, loginWithRedirect]);
 
-        /*
-        fetchStaticPreferencesList()
-            .then(data => {
-                if (!data || data.length === 0) {throw new Error('No Preferences found in database');}
-                setDietPrefList(data);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error('Full preferences load error:', error);
-                setError(error.message || 'Failed to load preferences');
-                setLoading(false);
-            });    
-    }, []);     */
-    //
     // Handle preference selection
   const handlePrefToggle = (preferenceId) => {
     setSelectedPref(prev => {
@@ -88,15 +67,6 @@ const PreferencesPage = () => {
             alert('Please select at least one preference');
             return;
         }
-        // if (!isAuthenticated) {
-        //     loginWithRedirect({
-        //         appState: { returnTo: window.location.pathname }
-        //     }).then(() => {
-        //         // After login, try again
-        //         handlePrefUpdate();
-        //     });
-        //     return;
-        // }
         setLoading(true);
         
         getAccessTokenSilently()
@@ -121,22 +91,6 @@ const PreferencesPage = () => {
             setLoading(false);
         });
 
-
-        // setLoading(true);
-        // getAccessTokenSilently()
-        //     .then(token => {
-        //         return updatePreferencesList(user.sub, selectedPref, token);
-        //     })
-        //     .then(() => {
-        //         navigate('/profile');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving preferences:', error);
-        //         alert('Failed to save preferences from handlePredUpdate().');
-        //     })
-        //     .finally(() =>{
-        //         setLoading(false);
-        //     });
     };
 
     //
@@ -166,17 +120,6 @@ const PreferencesPage = () => {
                         </div>
                     ))}
                 </div>
-                {/* <div className="selected-preferences card-style"> 
-                    <h3>Selected:</h3>
-                    <ul>
-                        {selectedPref.map(e => (
-                            <li key = {e}> {e}</li>
-                        ))}
-                    </ul>
-                    <Link to="/profile" className="apbutton">
-                        Confirm
-                    </Link>
-                </div> */}
                 <button onClick={handlePrefUpdate} disabled={selectedPref.length === 0} className="apbutton">
                     Save Preferences
                 </button>
