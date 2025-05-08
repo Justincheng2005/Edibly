@@ -127,10 +127,29 @@ export const fetchStaticAllergiesList = () => {
             }
             return res.json();
         })
-        .catch(error => {
+        .catch((error) =>{
             console.error('Fetch error:', error);
             throw error;
         });
+};
+
+export const fetchSearchMeals = async (mealQuery) => {
+    try{
+        if(!mealQuery.trim()){
+            return [];
+        }
+        const response = await fetch(`${API_BASE_URL}/meals-search?mealQuery=${encodeURIComponent(mealQuery)}`);
+        if(!response.ok){
+            throw new Error(await response.text());
+        }
+        const data = await response.json();
+        console.log('Api response data:', data); // Log the response data for debugging
+        return data.results || data || [];
+        // return await response.json();//?????????
+    }catch(error) {
+        console.error('Search for meals failed:', error);
+        throw error;
+    }
 };
 
 export const fetchMenuItemsByDiningHallId = async (diningHallId) => {

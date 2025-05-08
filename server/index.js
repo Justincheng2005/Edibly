@@ -7,6 +7,7 @@ import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import mealSearchRoutes from "./routes/mealSearchRoutes.js"
 import { Router } from "express";
 
 const PORT = process.env.PORT || 3000;
@@ -29,6 +30,7 @@ app.use('/users', userRoutes)
 app.use('/meals', mealRoutes)
 app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
+app.use('/meals-search', mealSearchRoutes);
 app.use('/profilee', allergiesRoutes);
 
 // basic route
