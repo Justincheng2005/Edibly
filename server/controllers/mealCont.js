@@ -111,7 +111,7 @@ async function processDietaryRestrictions(mealName, diningId, restrictions) {
     const mealId = mealData.mealid;
 
     // Map of restriction strings to their type (allergy or preference)
-    const restrictionMap = {
+    const ValentineRestrictionMap = {
         'Contains Eggs': { type: 'allergy', name: 'Eggs' },
         'Contains Milk': { type: 'allergy', name: 'Milk' },
         'Contains Soy': { type: 'allergy', name: 'Soy' },
@@ -119,7 +119,7 @@ async function processDietaryRestrictions(mealName, diningId, restrictions) {
         'Contains Gluten': { type: 'allergy', name: 'Gluten' },
         'Contains Fish': { type: 'allergy', name: 'Fish' },
         'Contains Shellfish': { type: 'allergy', name: 'Shellfish' },
-        'Contains Tree Nuts': { type: 'allergy', name: 'Tree Nuts' || 'Tree/Nuts' },
+        'Contains Tree Nuts': { type: 'allergy', name: 'Tree Nuts' },
         'Contains Peanuts': { type: 'allergy', name: 'Peanuts' },
         'Contains Corn': { type: 'allergy', name: 'Corn' },
         'Contains Sesame': { type: 'allergy', name: 'Sesame' },
@@ -129,9 +129,33 @@ async function processDietaryRestrictions(mealName, diningId, restrictions) {
         'Local': { type: 'preference', name: 'Local' },
         'Whole Grain': { type: 'preference', name: 'Whole Grain' }
     };
+    const mtHolyokeMap = {
+        'Eggs': { type: 'allergy', name: 'Eggs' },
+        'Milk': { type: 'allergy', name: 'Milk' },
+        'Soy': { type: 'allergy', name: 'Soy' },
+        'Wheat': { type: 'allergy', name: 'Wheat' },
+        'Gluten': { type: 'allergy', name: 'Gluten' },
+        'Fish': { type: 'allergy', name: 'Fish' },
+        'Shellfish': { type: 'allergy', name: 'Shellfish' },
+        'Tree/Nuts': { type: 'allergy', name: 'Tree Nuts' },
+        'Peanuts': { type: 'allergy', name: 'Peanuts' },
+        'Corn': { type: 'allergy', name: 'Corn' },
+        'Sesame': { type: 'allergy', name: 'Sesame' },
+        'Vegan': { type: 'preference', name: 'Vegan' },
+        'Vegetarian': { type: 'preference', name: 'Vegetarian' },
+        'Halal': { type: 'preference', name: 'Halal' },
+        'Local': { type: 'preference', name: 'Local' },
+        'Whole Grain': { type: 'preference', name: 'Whole Grain' }
+    };
 
     for (const restriction of restrictions) {
-        const mappedRestriction = restrictionMap[restriction];
+        let mappedRestriction = ValentineRestrictionMap[restriction];
+        if (diningId === 6) {
+            mappedRestriction = mtHolyokeMap[restriction];
+        }
+        else{
+            mappedRestriction = ValentineRestrictionMap[restriction];
+        }
 
         // Skip if we don't recognize this restriction
         if (!mappedRestriction) {

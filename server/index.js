@@ -7,6 +7,7 @@ import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import mealSearchRoutes from "./routes/mealSearchRoutes.js"
 import { Router } from "express";
 
@@ -32,6 +33,8 @@ app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
 app.use('/meals-search', mealSearchRoutes);
 app.use('/profilee', allergiesRoutes);
+app.use('/review', reviewRoutes);
+
 
 // basic route
 app.get("/test", (req, res) => {
