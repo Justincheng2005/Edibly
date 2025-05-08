@@ -36,6 +36,10 @@ const MealSearchPage = () => {
         try{
             setIsLoading(true);
             setError(null);
+            if(!mealQuery.trim()){
+                setResults([]);
+                return;
+            }
             const data = await fetchSearchMeals(mealQuery);
             const formattedResults = (data?.results || data || []).map(e => ({
                 ...e,
@@ -44,7 +48,10 @@ const MealSearchPage = () => {
             // setResults(data?.results || data || []);
             setResults(formattedResults);
         }catch(error){
-            setError(error.message);
+            if(error.message !== '{"error":"Search query is missing"}') {
+                setError(error.message);
+            }
+           // setError(error.message);
             setResults([]); //Clear results on error
         }finally {
             setIsLoading(false);
