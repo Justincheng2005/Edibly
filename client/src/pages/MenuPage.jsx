@@ -21,6 +21,11 @@ const MenuPage = () => {
     const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
     const [debugInfo, setDebugInfo] = useState({});
     const [authStatus, setAuthStatus] = useState("unknown");
+    const [reviews, setReviews] = useState([]);
+    const [title, setNewTitle] = useState("");
+    const [newText, setNewText] = useState("");
+    const [rating, setRating] = useState(0);
+    const [hover, setHover] = useState(null);
 
     // Check user authentication status in more detail
     useEffect(() => {
@@ -387,6 +392,77 @@ const MenuPage = () => {
         loadMenuData();
     }, [id, isAuthenticated, user?.sub, authStatus]);
 
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3000/reviews/${id}`);
+                setReviews(res.data);
+                console.log("Fetched reviews:", res.data);
+            } catch (err) {
+                console.error("Failed to fetch reviews:", err);
+            }
+        };
+    
+        fetchReviews();
+    }, [id]);
+    
+    
+
+    const handleAddReview = async () => {
+        if (!newText.trim()) return;
+        console.log(user.sub);
+        console.log(await syncUser());
+    
+        const token = await getAccessTokenSilently();
+        try {
+            const res = await axios.post(`http://localhost:3000/reviews`, {
+                title: title,
+                rating: rating,
+                text: newText,
+                diningId: id,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+            setReviews((prevReviews) => [...prevReviews, res.data]);
+            setNewText("");
+            setNewTitle("");
+            setRating(0);
+        } catch (err) {
+            console.error("Failed to add review:", err);
+        }
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+
+        try {
+            await axios.delete(`http://localhost:3000/reviews/${reviewId}`, {
+                headers: {
+                    Authorization: `Bearer ${await getAccessTokenSilently()}`,
+                },
+            });
+            setReviews(reviews.filter(review => review.reviewid !== reviewId));
+        } catch (err) {
+            console.error("Failed to delete review:", err);
+        }
+    };
+
+    const handleStarClick = (index) => {
+        setRating(index + 1); // Set rating based on clicked star
+    };
+
+    const handleStarHover = (index) => {
+        setHover(index + 1); // Update hover rating
+    };
+
+    const handleStarLeave = () => {
+        setHover(0); // Reset hover effect when mouse leaves
+    };
+
     const goBack = () => {
         navigate(-1);
     };
@@ -512,6 +588,67 @@ const MenuPage = () => {
                         </div>
                     </>
                 )}
+            </div>
+            <div className="reviews-section">
+                <h2 >Reviews</h2>
+                
+                <div className="reviews-list">
+                    {reviews.length === 0 ? (
+                        <p className="empty-list">No reviews yet. Be the first to leave one!</p>
+                    ) : (
+                        reviews.map((review) => (
+                        <div key={review.reviewid} className="review-item">
+                            {/* <h4>{review.title}</h4> */}
+                            <div className="star-rating">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <span key={i} style={{ color: i < review.rating ? "#ffc107" : "#e4e5e9" }}>
+                                    ★
+                                    </span>
+                                ))}
+                            </div>
+                            <p>{review.text}</p>
+                            {user && review.userid == user.sub ? (
+                                <button onClick={() => handleDeleteReview(review.reviewid)}>Delete</button>
+                            ) : (
+                                <div></div>                           
+                            )} 
+                            {/* <button onClick={() => handleDeleteReview(review.reviewid)}>Delete</button> */}
+                        </div>
+                        ))
+                    )}
+                </div>
+                <div className="add-review">
+                    {/* <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setNewTitle(e.target.value)}
+                        placeholder="Review Title"
+                        className="review-title"
+                    /> */}
+                    <textarea
+                        value={newText}
+                        onChange={(e) => setNewText(e.target.value)}
+                        placeholder="Write your review here..."
+                    />
+                    <div className="star-rating">
+                        {[...Array(5)].map((_, index) => (
+                            <span
+                                key={index}
+                                className={`star ${index < (hover || rating) ? 'filled' : ''}`}
+                                onClick={() => handleStarClick(index)}
+                                onMouseEnter={() => handleStarHover(index)}
+                                onMouseLeave={handleStarLeave}
+                            >
+                                ★
+                            </span>
+                        ))}
+                    </div>
+                    {isAuthenticated ? (
+                        <button onClick={handleAddReview}>Submit Review</button>
+                    ) : (
+                        <p className="auth-warning">You must be logged in to submit a review.</p>
+                    )}
+             </div>
             </div>
         </div>
     );

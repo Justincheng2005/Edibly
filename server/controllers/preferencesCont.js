@@ -1,10 +1,6 @@
 import { error } from 'selenium-webdriver';
 import supabase from '../db/supabaseClient.js';
 
-console.log('Supabase instance:', supabase);
-supabase.from('preferences').select('*')
-    .then(console.log)
-    .catch(console.error);
 
 export const getStaticPreferenceList = () =>{
     return supabase.from('preferences')

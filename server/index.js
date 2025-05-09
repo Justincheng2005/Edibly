@@ -7,6 +7,7 @@ import diningRoutes from "./routes/diningRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 import allergiesRoutes from "./routes/allergiesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import mealSearchRoutes from "./routes/mealSearchRoutes.js"
 import { Router } from "express";
 
@@ -32,6 +33,8 @@ app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
 app.use('/meals-search', mealSearchRoutes);
 app.use('/profilee', allergiesRoutes);
+app.use('/reviews', reviewRoutes);
+
 
 // basic route
 app.get("/test", (req, res) => {
@@ -42,10 +45,10 @@ app.get("/test", (req, res) => {
 // const { data, error } = await supabase.from('meals').select('*');
 // console.log(data, error);
 
-supabase.from('meals').select('*')
-    .then(({ data, error }) => {
-        console.log('Supabase connection test:', data, error);
-    });
+// supabase.from('meals').select('*')
+//     .then(({ data, error }) => {
+//         console.log('Supabase connection test:', data, error);
+//     });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
