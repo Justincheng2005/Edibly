@@ -1,11 +1,8 @@
 import supabase from '../db/supabaseClient.js';
 
-console.log('Supabase instance:', supabase);
-supabase.from('allergies').select('*')
-    .then(console.log)
-    .catch(console.error);
 
-export const getStaticAllergyList = () =>{
+
+export const getStaticAllergyList = async() =>{
     return supabase.from('allergies')
     .select('allergyid, allergyname')
     .then(({ data, error }) => {

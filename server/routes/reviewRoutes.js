@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getReviews, getReviewById, createReview, updateReview, deleteReview } from "../controllers/reviewCont.js";
 import { checkJwt } from "./userRoutes.js";
+import supabase from "../db/supabaseClient.js";
 
 const router = Router();
 
@@ -31,8 +32,9 @@ router.get("/review/:id", async (req, res) => {
 
 router.post("/", checkJwt, async (req, res) => {
     try {
+        console.log("Creating review");
         const auth0Id = req.auth.sub;
-        const { reviewData } = req.body;
+        const reviewData = req.body;
 
         if (!auth0Id) {
             return res.status(401).json({ error: "Unauthorized: Missing auth0Id" });
@@ -55,8 +57,8 @@ router.post("/", checkJwt, async (req, res) => {
 
         console.log("Creaing review for:", existingUser.userid);
 
-        await createReview(existingUser.userid, reviewData);
-        return res.status(201).json({ success: true });
+        const newReview = await createReview(existingUser.userid, reviewData);
+        return res.status(201).json(newReview);
     } catch (error) {
         console.error("Route handler error:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -67,7 +69,7 @@ router.put("/:reviewId", checkJwt, async (req, res) => {
     try {
         const auth0Id = req.auth.sub;
         const { reviewId } = req.params;
-        const { reviewData } = req.body;
+        const reviewData = req.body;
 
         if (!auth0Id) {
             return res.status(401).json({ error: "Unauthorized: Missing auth0Id" });
@@ -91,8 +93,8 @@ router.put("/:reviewId", checkJwt, async (req, res) => {
 
         console.log("Updating review for:", existingUser.userid);
 
-        await updateReview(reviewId, reviewData);
-        return res.status(201).json({ success: true });
+        const newReview = await updateReview(reviewId, reviewData);
+        return res.status(201).json(newReview);
     } catch (error) {
         console.error("Route handler error:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -102,7 +104,7 @@ router.put("/:reviewId", checkJwt, async (req, res) => {
 router.delete("/:reviewId", checkJwt, async (req, res) => {
     try {
         const auth0Id = req.auth.sub;
-        const { reviewId } = req.params;
+        const reviewId = req.params.reviewId;
 
         if (!auth0Id) {
             return res.status(401).json({ error: "Unauthorized: Missing auth0Id" });
@@ -123,7 +125,6 @@ router.delete("/:reviewId", checkJwt, async (req, res) => {
             return res.status(404).json({ error: "Associated user not found" });
         }
 
-        console.log("Deleting review for:", existingUser.userid);
 
         await deleteReview(existingUser.userid, reviewId);
         return res.status(200).json({ success: true });

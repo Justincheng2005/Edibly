@@ -33,7 +33,7 @@ app.use('/diningLocations', diningRoutes)
 app.use('/profile', preferencesRoutes);
 app.use('/meals-search', mealSearchRoutes);
 app.use('/profilee', allergiesRoutes);
-app.use('/review', reviewRoutes);
+app.use('/reviews', reviewRoutes);
 
 
 // basic route
@@ -45,10 +45,10 @@ app.get("/test", (req, res) => {
 // const { data, error } = await supabase.from('meals').select('*');
 // console.log(data, error);
 
-supabase.from('meals').select('*')
-    .then(({ data, error }) => {
-        console.log('Supabase connection test:', data, error);
-    });
+// supabase.from('meals').select('*')
+//     .then(({ data, error }) => {
+//         console.log('Supabase connection test:', data, error);
+//     });
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
