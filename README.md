@@ -1,13 +1,13 @@
 # Edibly - Campus Dining Application
 
-Edibly is a web application that helps students find and explore dining options across campuses in the Five College Consortium.
+Edibly is a web-based dietary profiling app that helps users navigate local dining options based on their dietary needs/allergies, and preferences. The platform allows users to create a profile, specify allergies with severity levels, and receive personalized dining recommendations across the Five Colleges.
 
 ## Features
 
 - Browse dining halls by college
 - View dining hall details and hours
-- Search for meals (coming soon)
-- User profiles (coming soon)
+- Search for meals 
+- User profiles 
 
 ## Project Structure
 
@@ -21,7 +21,6 @@ Edibly is a web application that helps students find and explore dining options 
 
 - Node.js (v14+)
 - npm or yarn
-- Supabase account (project already set up with dininglocations table)
 
 ### Environment Variables
 
@@ -52,26 +51,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 1. Start the backend server:
    ```
    cd server
-   npm start
+   npm run dev
    ```
 
 2. In a separate terminal, start the frontend:
    ```
    cd client
-   npm start
+   npm run dev
    ```
 
-3. Open your browser and navigate to `http://localhost:3000`
-
-## Dining Halls Data Structure
-
-The application uses the existing `dininglocations` table in Supabase with the following fields:
-
-- `id`: Unique identifier
-- `name`: Name of the dining hall
-- `hours`: Operating hours for the dining hall
-- `school`: Associated college/university
-- Additional fields like comments, ratings, etc.
+3. Open your browser and navigate to `http://localhost:5173`
 
 ## Contributing
 
