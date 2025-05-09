@@ -24,12 +24,15 @@ Edibly is a web-based dietary profiling app that helps users navigate local dini
 
 ### Environment Variables
 
-Create a `.env` file in the server directory with the following variables:
+Create a `.env` file in the `server/` directory with the following variables:
 
 ```
 PORT=3000
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+DATABASE_URL=your_database_url
+AUTH0_DOMAIN=your_auth0_domain
+AUTH0_AUDIENCE=your_auth0_audience
 ```
 
 ### Installation
